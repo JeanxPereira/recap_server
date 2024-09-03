@@ -31,10 +31,20 @@ jobs:
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1
 
+      - name: Set environment variables
+        run: |
+          echo "INCLUDE_PATH=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
+
+      - name: Debug Environment Variables
+        run: |
+          echo "INCLUDE_PATH=${{ env.INCLUDE_PATH }}"
+          echo "LIBRARY_PATH=${{ env.LIBRARY_PATH }}"
+
       - name: Run MSBuild
         working-directory: ${{ github.workspace }}
         run: |
-          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" /p:LibraryPath="${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib"
+          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="${{ env.INCLUDE_PATH }}" /p:LibraryPath="${{ env.LIBRARY_PATH }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
