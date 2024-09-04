@@ -39,22 +39,22 @@ jobs:
       # Descompactar o arquivo ZIP do Boost
       - name: Unzip Boost 1.73.0
         run: |
-          7z x boost_1_73_0.zip -o${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0
+          7z x boost_1_73_0.zip -o${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0
         shell: cmd
 
-      # Definir variáveis de ambiente para o Boost com o escape adequado para o ponto-e-vírgula
+      # Definir variáveis de ambiente para o Boost
       - name: Set environment variables for Boost
         run: |
-          echo "BOOST_ROOT=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0" >> $GITHUB_ENV
-          echo "BOOST_LIBRARYDIR=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
-          echo "INCLUDE_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0;${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
-          echo "LIBRARY_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
+          echo "BOOST_ROOT=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0" >> $GITHUB_ENV
+          echo "BOOST_LIBRARYDIR=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\stage\lib" >> $GITHUB_ENV
+          echo "INCLUDE_PATH=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
         shell: bash
 
       # Definir corretamente as variáveis INCLUDE e LIB para o MSBuild
       - name: Set INCLUDE and LIB for MSBuild
         run: |
-          echo "INCLUDE=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include;$INCLUDE" >> $GITHUB_ENV
+          echo "INCLUDE=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include;$INCLUDE" >> $GITHUB_ENV
           echo "LIB=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib;$LIB" >> $GITHUB_ENV
 
       # Setup do ambiente MSVC
@@ -74,6 +74,11 @@ jobs:
         run: |
           echo "INCLUDE_PATH=${{ env.INCLUDE_PATH }}"
           echo "LIBRARY_PATH=${{ env.LIBRARY_PATH }}"
+
+      # Verificar se o Boost foi descompactado corretamente
+      - name: List Boost headers
+        run: |
+          dir ${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\boost
 
       # Rodar a compilação do projeto com MSBuild
       - name: Run MSBuild
