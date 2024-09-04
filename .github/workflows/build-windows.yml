@@ -24,27 +24,29 @@ jobs:
       - name: Download and unzip Boost 1.73.0
         run: |
           curl -L -o boost_1_73_0.zip https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip
-          unzip boost_1_73_0.zip
+          powershell -Command "Expand-Archive -Path boost_1_73_0.zip -DestinationPath ."
         shell: cmd
 
       - name: Set up MSVC environment
         run: |
-          set VSWHERE_PATH="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-          for /f "tokens=*" %%i in ('%VSWHERE_PATH% -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath') do set InstallDir=%%i
-          call "%InstallDir%\VC\Auxiliary\Build\vcvarsall.bat" x64
-          cd boost_1_73_0
-          bootstrap.bat vc142 || true
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
         shell: cmd
 
-      - name: Show bootstrap log
-        run: cat boost_1_73_0/bootstrap.log
-        shell: bash
-
+      - name: Bootstrap Boost
+        run: |
+          cd boost_1_73_0
+          bootstrap.bat
+        shell: cmd
+        
       - name: Build Boost
         run: |
           cd boost_1_73_0
           .\b2 --with-filesystem --with-system --with-thread --with-date_time --with-regex --with-serialization --with-chrono --with-atomic --with-log --toolset=msvc-14.2 address-model=64 link=static runtime-link=shared stage
         shell: cmd
+        
+      - name: Show bootstrap log
+        run: cat boost_1_73_0/bootstrap.log
+        shell: bash
 
       - name: Set environment variables for Boost
         run: |
