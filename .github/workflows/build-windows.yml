@@ -30,9 +30,9 @@ jobs:
       - name: Bootstrap Boost
         run: |
           cd boost_1_73_0
-          bootstrap.bat || true
+          bootstrap.bat vc142 || true
         shell: cmd
-    
+
       - name: Show bootstrap log
         run: cat boost_1_73_0/bootstrap.log
         shell: bash
