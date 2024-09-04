@@ -21,50 +21,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup do ambiente de desenvolvimento MSVC usando gha-setup-vsdevenv
-      - name: Set up MSVC environment
-        uses: seanmiddleditch/gha-setup-vsdevenv@v4
-        with:
-          arch: amd64
-          components: Microsoft.VisualStudio.Component.VC.Tools.x86.x64;Microsoft.VisualStudio.Component.Windows10SDK.19041;Microsoft.VisualStudio.Component.VC.CMake.Project
-
-      # Cache Boost para evitar recompilação
-      - name: Cache Boost
-        uses: actions/cache@v3
-        with:
-          path: boost_1_73_0
-          key: boost-1.73.0-${{ runner.os }}-${{ hashFiles('boost_1_73_0/bootstrap.log') }}
-          restore-keys: |
-            boost-1.73.0-${{ runner.os }}
-
-      # Baixar e descompactar Boost, apenas se o cache não estiver presente
-      - name: Download and unzip Boost 1.73.0
-        if: steps.cache.outputs.cache-hit != 'true'
+      # Baixar o arquivo ZIP do Boost compilado do Google Drive
+      - name: Download Boost 1.73.0 precompiled from Google Drive
         run: |
-          curl -L -o boost_1_73_0.zip https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip
-          7z x boost_1_73_0.zip
+          curl -L -o boost_1_73_0.zip "https://drive.google.com/uc?export=download&id=1PoiQ581vgl3iGp5xw6DDJWP6ZI1Xkgp7"
         shell: cmd
 
-      # Rodar o Bootstrap do Boost
-      - name: Bootstrap Boost
+      # Descompactar o arquivo ZIP do Boost
+      - name: Unzip Boost 1.73.0
         run: |
-          cd boost_1_73_0
-          bootstrap.bat msvc
+          7z x boost_1_73_0.zip -o${{ runner.workspace }}\boost_1_73_0
         shell: cmd
 
-      # Compilar Boost com MSVC 14.2
-      - name: Build Boost
-        run: |
-          cd boost_1_73_0
-          .\b2 --with-filesystem --with-system --with-thread --with-date_time --with-regex --with-serialization --with-chrono --with-atomic --with-log --toolset=msvc-14.2 address-model=64 link=static runtime-link=shared stage
-        shell: cmd
-
-      # Mostrar logs do Bootstrap para depuração
-      - name: Show bootstrap log
-        run: cat boost_1_73_0/bootstrap.log
-        shell: bash
-
-      # Definir variáveis de ambiente para Boost
+      # Definir variáveis de ambiente para o Boost
       - name: Set environment variables for Boost
         run: |
           echo BOOST_ROOT=${{ runner.workspace }}\boost_1_73_0 >> $GITHUB_ENV
@@ -72,11 +41,19 @@ jobs:
           echo INCLUDE_PATH=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include >> $GITHUB_ENV
           echo LIBRARY_PATH=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib >> $GITHUB_ENV
 
+      # Setup do ambiente MSVC
+      - name: Set up MSVC environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        with:
+          arch: amd64
+          components: Microsoft.VisualStudio.Component.VC.Tools.x86.x64;Microsoft.VisualStudio.Component.Windows10SDK.19041;Microsoft.VisualStudio.Component.VC.CMake.Project
+          toolset_version: 14.2  # Especifica o uso do MSVC 14.2
+
       # Instalar MSBuild
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      # Verificar variáveis de ambiente de inclusão e biblioteca
+      # Verificar variáveis de ambiente
       - name: Debug Environment Variables
         run: |
           echo "INCLUDE_PATH=${{ env.INCLUDE_PATH }}"
