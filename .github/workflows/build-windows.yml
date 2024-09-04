@@ -24,7 +24,7 @@ jobs:
       - name: Locate and set up MSVC environment
         run: |
           echo @echo off > setup_msvc.bat
-          echo for /f "tokens=*" %%%%i in ^('^"C:\Program Files ^(x86^)\Microsoft Visual Studio\Installer\vswhere.exe^" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath^') do set VSPATH=%%%%i >> setup_msvc.bat
+          echo for /f "tokens=*" %%%%i in ^('^"C:\Program Files \(x86\)\Microsoft Visual Studio\Installer\vswhere.exe^" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath^') do set VSPATH=%%%%i >> setup_msvc.bat
           echo call "%%%%VSPATH%%%%\VC\Auxiliary\Build\vcvars64.bat" >> setup_msvc.bat
           call setup_msvc.bat
         shell: cmd
@@ -37,14 +37,10 @@ jobs:
 
       - name: Set up MSVC environment
         run: |
-          if exist "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" (
-            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          ) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat" (
-            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvars64.bat"
-          ) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat" (
-            "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+          if exist "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat" (
+            call "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat"
           ) else (
-            echo "VCVARS64.BAT not found"
+            echo "vcvars64.bat not found in the path: %VSPATH%"
             exit /b 1
           )
         shell: cmd
