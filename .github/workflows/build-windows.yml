@@ -39,7 +39,7 @@ jobs:
       # Descompactar o arquivo ZIP do Boost
       - name: Unzip Boost 1.73.0
         run: |
-          7z x boost_1_73_0.zip -o${{ runner.workspace }}darkspore_server\libs\boost_1_73_0
+          7z x boost_1_73_0.zip -o${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0
         shell: cmd
 
       # Definir variáveis de ambiente para o Boost com o escape adequado para o ponto-e-vírgula
