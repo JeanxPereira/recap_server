@@ -21,10 +21,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Configura o ambiente do Visual Studio com a ação `gha-setup-vsdevenv`
       - name: Set up MSVC environment
-        uses: TheMrMilchmann/setup-msvc-dev@v3
+        uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
-          arch: x64
+          arch: amd64  # Configura o build para x64 (amd64)
 
       - name: Download and unzip Boost 1.73.0
         run: |
@@ -37,7 +38,7 @@ jobs:
           cd boost_1_73_0
           bootstrap.bat msvc || true
         shell: cmd
-        
+
       - name: Build Boost
         run: |
           cd boost_1_73_0
