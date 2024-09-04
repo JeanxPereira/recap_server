@@ -19,7 +19,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      # Cache Boost para evitar download e compilação repetidos
+      - name: Cache Boost
+        uses: actions/cache@v3
+        with:
+          path: boost_1_73_0
+          key: boost-1.73.0-${{ runner.os }}-${{ hashFiles('boost_1_73_0/bootstrap.log') }}
+          restore-keys: |
+            boost-1.73.0-${{ runner.os }}
 
       # Configura o ambiente do Visual Studio sem vcvarsall
       - name: Set up MSVC environment without vcvarsall
@@ -29,6 +38,7 @@ jobs:
           components: Microsoft.VisualStudio.Component.VC.Tools.x86.x64;Microsoft.VisualStudio.Component.Windows10SDK.19041;Microsoft.VisualStudio.Component.VC.CMake.Project
 
       - name: Download and unzip Boost 1.73.0
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl -L -o boost_1_73_0.zip https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip
           7z x boost_1_73_0.zip
@@ -37,7 +47,7 @@ jobs:
       - name: Bootstrap Boost
         run: |
           cd boost_1_73_0
-          bootstrap.bat msvc || true
+          bootstrap.bat msvc
         shell: cmd
 
       - name: Build Boost
@@ -68,7 +78,13 @@ jobs:
       - name: Run MSBuild
         working-directory: ${{ github.workspace }}
         run: |
-          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="${{ env.INCLUDE_PATH }}" /p:LibraryPath="${{ env.LIBRARY_PATH }}"
+          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="${{ env.INCLUDE_PATH }}" /p:LibraryPath="${{ env.LIBRARY_PATH }}" /fileLogger /fileLoggerParameters:LogFile=msbuild.log
+
+      - name: Upload MSBuild Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: msbuild-logs
+          path: msbuild.log
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
