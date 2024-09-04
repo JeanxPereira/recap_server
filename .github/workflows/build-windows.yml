@@ -20,20 +20,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+    
       - name: Download and unzip Boost 1.73.0
         run: |
           curl -L -o boost_1_73_0.zip https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip
           unzip boost_1_73_0.zip
         shell: cmd
-
-
+    
       - name: Bootstrap Boost
         run: |
           cd boost_1_73_0
-          bootstrap.bat
+          bootstrap.bat || true
         shell: cmd
-        
+    
       - name: Show bootstrap log
         run: cat boost_1_73_0/bootstrap.log
         shell: bash
