@@ -53,9 +53,13 @@ jobs:
         run: |
           echo "BOOST_ROOT=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0" >> $GITHUB_ENV
           echo "BOOST_LIBRARYDIR=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib" >> $GITHUB_ENV
-          echo "INCLUDE_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\boost;${{ runner.workspace }}\darkspore_server\source;${{ runner.workspace }}\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
-          echo "LIBRARY_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
-        shell: bash
+          echo "INCLUDE_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0;${{ runner.workspace }}\darkspore_server\source;${{ runner.workspace }}\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
+          echo "LIBRARY_PATH=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib" >> $GITHUB_ENV
+          
+      - name: Debug Environment Variables
+        run: |
+          echo "INCLUDE_PATH=${{ env.INCLUDE_PATH }}"
+          echo "LIBRARY_PATH=${{ env.LIBRARY_PATH }}"
 
       # Definir corretamente as variáveis INCLUDE e LIB para o MSBuild
       - name: Set INCLUDE and LIB for MSBuild
