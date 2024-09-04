@@ -21,11 +21,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Configura o ambiente do Visual Studio com a ação `gha-setup-vsdevenv`
-      - name: Set up MSVC environment
+      # Configura o ambiente do Visual Studio sem vcvarsall
+      - name: Set up MSVC environment without vcvarsall
         uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
           arch: amd64  # Configura o build para x64 (amd64)
+          components: Microsoft.VisualStudio.Component.VC.Tools.x86.x64;Microsoft.VisualStudio.Component.Windows10SDK.19041;Microsoft.VisualStudio.Component.VC.CMake.Project
 
       - name: Download and unzip Boost 1.73.0
         run: |
