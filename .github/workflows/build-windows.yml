@@ -21,28 +21,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Locate and set up MSVC environment
-        run: |
-          echo @echo off > setup_msvc.bat
-          echo for /f "tokens=*" %%%%i in ^('^"C:\Program Files \(x86\)\Microsoft Visual Studio\Installer\vswhere.exe^" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath^') do set VSPATH=%%%%i >> setup_msvc.bat
-          echo call "%%%%VSPATH%%%%\VC\Auxiliary\Build\vcvars64.bat" >> setup_msvc.bat
-          call setup_msvc.bat
-        shell: cmd
+      - name: Set up MSVC environment
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
 
       - name: Download and unzip Boost 1.73.0
         run: |
           curl -L -o boost_1_73_0.zip https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip
-          powershell -Command "Expand-Archive -Path boost_1_73_0.zip -DestinationPath ."
-        shell: cmd
-
-      - name: Set up MSVC environment
-        run: |
-          if exist "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat" (
-            call "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat"
-          ) else (
-            echo "vcvars64.bat not found in the path: %VSPATH%"
-            exit /b 1
-          )
+          7z x boost_1_73_0.zip
         shell: cmd
 
       - name: Bootstrap Boost
