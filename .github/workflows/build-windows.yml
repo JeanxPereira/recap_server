@@ -30,7 +30,7 @@ jobs:
 
       - name: Bootstrap Boost
         run: |
-          cd boost_1_73_0
+          cd boost_1_73_0\boost_1_73_0
           bootstrap.bat
         shell: bash
 
