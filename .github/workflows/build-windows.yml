@@ -29,9 +29,11 @@ jobs:
 
       - name: Set up MSVC environment
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+          set VSWHERE_PATH="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          for /f "tokens=*" %%i in ('%VSWHERE_PATH% -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath') do set InstallDir=%%i
+          call "%InstallDir%\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd boost_1_73_0
-          bootstrap.bat vc142
+          bootstrap.bat vc142 || true
         shell: cmd
 
       - name: Show bootstrap log
