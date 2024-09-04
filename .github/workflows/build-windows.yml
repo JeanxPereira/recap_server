@@ -35,7 +35,7 @@ jobs:
       - name: Bootstrap Boost
         run: |
           cd boost_1_73_0
-          bootstrap.bat || true
+          bootstrap.bat msvc || true
         shell: cmd
 
       - name: Show bootstrap log
