@@ -42,6 +42,12 @@ jobs:
           7z x boost_1_73_0.zip -o${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0
         shell: cmd
 
+      # Verificar a estrutura de diretórios do Boost após a descompactação
+      - name: List Boost directories
+        run: |
+          dir ${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0 /s
+
+
       # Definir variáveis de ambiente para o Boost
       - name: Set environment variables for Boost
         run: |
