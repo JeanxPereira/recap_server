@@ -21,11 +21,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Baixar o arquivo ZIP do Boost compilado do Google Drive
+      # Instalar o Python e o gdown para baixar arquivos do Google Drive
+      - name: Set up Python for gdown
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install gdown
+        run: |
+          pip install gdown
+
+      # Baixar o arquivo ZIP do Boost pré-compilado usando gdown
       - name: Download Boost 1.73.0 precompiled from Google Drive
         run: |
-          curl -L -o boost_1_73_0.zip "https://drive.google.com/uc?export=download&id=1PoiQ581vgl3iGp5xw6DDJWP6ZI1Xkgp7"
-        shell: cmd
+          gdown --id 1PoiQ581vgl3iGp5xw6DDJWP6ZI1Xkgp7 -O boost_1_73_0.zip
 
       # Descompactar o arquivo ZIP do Boost
       - name: Unzip Boost 1.73.0
