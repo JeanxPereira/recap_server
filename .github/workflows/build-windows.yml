@@ -33,6 +33,10 @@ jobs:
           cd boost_1_73_0
           bootstrap.bat
         shell: cmd
+        
+      - name: Show bootstrap log
+        run: cat boost_1_73_0/bootstrap.log
+        shell: bash
 
       - name: Build Boost
         run: |
