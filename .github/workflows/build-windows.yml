@@ -47,9 +47,15 @@ jobs:
         run: |
           echo "BOOST_ROOT=${{ runner.workspace }}\boost_1_73_0" >> $GITHUB_ENV
           echo "BOOST_LIBRARYDIR=${{ runner.workspace }}\boost_1_73_0\stage\lib" >> $GITHUB_ENV
-          echo "INCLUDE_PATH=${{ runner.workspace }}\recap_server\darkspore_server\source`;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include`;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
+          echo "INCLUDE_PATH=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include" >> $GITHUB_ENV
           echo "LIBRARY_PATH=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib" >> $GITHUB_ENV
         shell: bash
+
+      # Definir corretamente as variáveis INCLUDE e LIB para o MSBuild
+      - name: Set INCLUDE and LIB for MSBuild
+        run: |
+          echo "INCLUDE=${{ runner.workspace }}\recap_server\darkspore_server\source;${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\include;${{ runner.workspace }}\recap_server\darkspore_server\libs\rapidjson-1.1.0\include;$INCLUDE" >> $GITHUB_ENV
+          echo "LIB=${{ runner.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0\lib;$LIB" >> $GITHUB_ENV
 
       # Setup do ambiente MSVC
       - name: Set up MSVC environment
@@ -73,7 +79,7 @@ jobs:
       - name: Run MSBuild
         working-directory: ${{ github.workspace }}
         run: |
-          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:IncludePath="${{ env.INCLUDE_PATH }}" /p:LibraryPath="${{ env.LIBRARY_PATH }}" /fileLogger /fileLoggerParameters:LogFile=msbuild.log
+          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /fileLogger /fileLoggerParameters:LogFile=msbuild.log
 
       # Fazer upload dos logs do MSBuild
       - name: Upload MSBuild Logs
