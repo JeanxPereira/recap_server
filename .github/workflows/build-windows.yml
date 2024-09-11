@@ -51,11 +51,19 @@ jobs:
         run: |
           echo "BOOST_ROOT=${{ runner.workspace }}/darkspore_server/libs/boost_1_73_0" >> $GITHUB_ENV
           echo "BOOST_INCLUDE=${{ runner.workspace }}/darkspore_server/libs/boost_1_73_0/boost" >> $GITHUB_ENV
+          echo "INCLUDE=${{ runner.workspace }}/darkspore_server/libs/boost_1_73_0/boost;$INCLUDE" >> $GITHUB_ENV
 
+      # Debug para verificar se as variáveis de ambiente foram configuradas corretamente
+      - name: Debug Environment Variables
+        run: |
+          echo "BOOST_ROOT=${{ env.BOOST_ROOT }}"
+          echo "BOOST_INCLUDE=${{ env.BOOST_INCLUDE }}"
+          echo "INCLUDE=${{ env.INCLUDE }}"
 
       # Instalar MSBuild e configurar o ambiente MSVC
       - name: Install MSBuild and Set Up MSVC
         uses: microsoft/setup-msbuild@v1
+
       - name: Set up MSVC environment
         uses: seanmiddleditch/gha-setup-vsdevenv@v4
         with:
@@ -68,7 +76,8 @@ jobs:
 
       - name: List Boost Lib Directory
         run: dir ${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib
-        
+
+      # Verificar a estrutura completa do diretório
       - name: List Directory
         run: tree /f ${{ runner.workspace }}\darkspore_server
 
@@ -76,7 +85,7 @@ jobs:
       - name: Run MSBuild
         working-directory: ${{ github.workspace }}
         run: |
-          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /fileLogger /fileLoggerParameters:LogFile=msbuild.log
+          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /I${{ env.BOOST_INCLUDE }} /fileLogger /fileLoggerParameters:LogFile=msbuild.log
 
       # Fazer upload dos logs do MSBuild
       - name: Upload MSBuild Logs
