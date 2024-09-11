@@ -49,10 +49,9 @@ jobs:
       # Definir variáveis de ambiente para o Boost
       - name: Set environment variables for Boost
         run: |
-          echo "BOOST_ROOT=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0" >> $GITHUB_ENV
-          echo "BOOST_LIBRARYDIR=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib" >> $GITHUB_ENV
-          echo "INCLUDE=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0;${{ runner.workspace }}\darkspore_server\libs\rapidjson-1.1.0\include;${{ runner.workspace }}\darkspore_server\source" >> $GITHUB_ENV
-          echo "LIB=${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib" >> $GITHUB_ENV
+          echo "BOOST_ROOT=${{ runner.workspace }}/darkspore_server/libs/boost_1_73_0" >> $GITHUB_ENV
+          echo "BOOST_INCLUDE=${{ runner.workspace }}/darkspore_server/libs/boost_1_73_0/boost" >> $GITHUB_ENV
+
 
       # Instalar MSBuild e configurar o ambiente MSVC
       - name: Install MSBuild and Set Up MSVC
