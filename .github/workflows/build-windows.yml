@@ -69,6 +69,9 @@ jobs:
 
       - name: List Boost Lib Directory
         run: dir ${{ runner.workspace }}\darkspore_server\libs\boost_1_73_0\stage\lib
+        
+      - name: List Directory
+        run: tree /f ${{ runner.workspace }}\darkspore_server
 
       # Rodar a compilação do projeto com MSBuild
       - name: Run MSBuild
