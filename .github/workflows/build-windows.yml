@@ -35,11 +35,9 @@ jobs:
           boost_install_dir: ${{ env.BOOST_INSTALL_DIR }}
           platform_version: 2019
 
-      - name: List Boost directory
-        run: |
-          echo "Listing Boost installation directory:"
-          echo "${{ env.BOOST_INSTALL_DIR }}"
-
+      - name: Debug Boost directory
+        run: echo "Boost installed in: ${{ env.BOOST_INSTALL_DIR }}"
+        
       - name: Boost - Install
         run: |
           $sourcePath = "${{ env.BOOST_INSTALL_DIR }}\boost"
