@@ -32,7 +32,7 @@ jobs:
             platform_version: 2019
 
       - name: Boost - Install
-        bash: |
+        run: |
           mv "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
 
       - name: Install MSBuild
