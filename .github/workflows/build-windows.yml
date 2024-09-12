@@ -23,10 +23,9 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set Boost temporary path
+      - name: Set Boost install path
         id: set-boost-path
-        run: echo "BOOST_INSTALL_DIR=${{ runner.temp }}/boost_tmp" >> $GITHUB_ENV
-
+        run: echo "BOOST_INSTALL_DIR=${{ github.workspace }}/boost" >> $GITHUB_ENV
 
       - name: Boost - Build
         uses: MarkusJx/install-boost@v2.4.1
