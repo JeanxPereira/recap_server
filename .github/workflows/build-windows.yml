@@ -11,6 +11,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  BOOST_INSTALL_DIR: ${{ runner.temp }}/boost_tmp
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.3
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -27,32 +28,26 @@ jobs:
         uses: MarkusJx/install-boost@v2.4.1
         id: install-boost
         with:
-            boost_version: 1.73.0
-            boost_install_dir: ${{runner.temp}}\boost_tmp
-            platform_version: 2019
+          boost_version: 1.73.0
+          boost_install_dir: ${{ env.BOOST_INSTALL_DIR }}
+          platform_version: 2019
 
       - name: Boost - Install
         run: |
-          mv "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
+          mv "${{ env.BOOST_INSTALL_DIR }}\boost\boost" "${{ github.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0"
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
-        
-      # - name: Install Premake
-      #   uses: abel0b/setup-premake@v2.3
-      #   with:
-      #     version: "5.0.0-beta2"
-
-      # - name: Prepare source
-      #   run: premake5 vs2022
+        with:
+          vs-version: '16.0' # Visual Studio 2019
 
       - name: Run MSBuild
         id: run_msbuild
         working-directory: ${{ github.workspace }}
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
-        
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
-          path: ${{runner.workspace}}\recap_server\darkspore_server\build
+          path: ${{ github.workspace }}/recap_server/darkspore_server/build
