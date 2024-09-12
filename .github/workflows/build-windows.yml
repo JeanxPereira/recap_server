@@ -52,7 +52,7 @@ jobs:
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
         
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
           path: ${{runner.workspace}}\recap_server\darkspore_server\build
