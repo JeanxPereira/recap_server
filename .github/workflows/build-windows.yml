@@ -27,9 +27,11 @@ jobs:
         id: set-boost-path
         run: echo "BOOST_INSTALL_DIR=${{ runner.temp }}/boost_tmp" >> $GITHUB_ENV
         
-      - name: Set Boost temporary path
+      - name: Verify Boost temporary path
         id: verify-boost-path
-        run: tree /f "BOOST_INSTALL_DIR=${{ runner.temp }}/boost_tmp"
+        run: |
+          echo "Boost installation directory is ${{ env.BOOST_INSTALL_DIR }}"
+          tree /f "${{ env.BOOST_INSTALL_DIR }}"
 
       - name: Boost - Build
         uses: MarkusJx/install-boost@v2.4.1
