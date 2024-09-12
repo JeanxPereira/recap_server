@@ -37,7 +37,7 @@ jobs:
 
       - name: Boost - Install
         run: |
-          mv "${{ env.BOOST_INSTALL_DIR }}\boost\boost" "${{ github.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0"
+          mv "${{ env.BOOST_INSTALL_DIR }}\boost" "${{ github.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0"
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
