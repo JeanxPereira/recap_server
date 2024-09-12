@@ -38,7 +38,7 @@ jobs:
       - name: List Boost directory
         run: |
           echo "Listing Boost installation directory:"
-          Get-ChildItem ${{ env.BOOST_INSTALL_DIR }} -Recurse
+          ${{ github.workspace }}/boost
 
       - name: Boost - Install
         run: |
