@@ -19,7 +19,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.3
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: Boost - Install
         run: |
-          mv "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
+          move "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
@@ -52,7 +52,7 @@ jobs:
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
         
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
           path: ${{runner.workspace}}\recap_server\darkspore_server\build
