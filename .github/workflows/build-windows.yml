@@ -33,7 +33,7 @@ jobs:
 
       - name: Boost - Install
         run: |
-          mv "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
+          move "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
