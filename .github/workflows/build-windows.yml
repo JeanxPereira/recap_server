@@ -23,40 +23,37 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install OpenSSL
+      - name: Instalar OpenSSL
         run: |
           choco install openssl.light -y
 
-      - name: Set OpenSSL environment variables
-        shell: pwsh
+      - name: Definir variáveis de ambiente do OpenSSL
         run: |
-          echo "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL-Win64\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL-Win64\lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $env:OPENSSL_ROOT_DIR = 'C:\Program Files\OpenSSL-Win64'
+          $env:OPENSSL_INCLUDE_DIR = 'C:\Program Files\OpenSSL-Win64\include'
+          $env:OPENSSL_LIB_DIR = 'C:\Program Files\OpenSSL-Win64\lib'
 
-      - name: Download Boost 1.73.0
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip -OutFile boost_1_73_0.zip
-          Expand-Archive -Path boost_1_73_0.zip -DestinationPath "${{ github.workspace }}\recap_server\darkspore_server\libs"
+      - name: Instalar Strawberry Perl
+        run: choco install strawberryperl -y
 
-      - name: Build Boost Libraries
-        shell: cmd
+      - name: Construir Bibliotecas Boost
         working-directory: ${{ github.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0
+        shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           bootstrap.bat
+          if %ERRORLEVEL% neq 0 (
+            type bootstrap.log
+            exit /b %ERRORLEVEL%
+          )
           .\b2.exe --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
 
-      - name: Install MSBuild
+      - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Build the Project
-        shell: cmd
+      - name: Executar MSBuild
         working-directory: ${{ github.workspace }}
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
+        run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
