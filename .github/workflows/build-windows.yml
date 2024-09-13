@@ -16,29 +16,41 @@ jobs:
   build:
     runs-on: windows-latest
     name: Build
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Boost - Build
-        uses: MarkusJx/install-boost@v2.4.1
-        id: install-boost
-        with:
-            boost_version: 1.73.0
-            boost_install_dir: ${{ github.workspace }}/recap_server/darkspore_server/libs/boost_1_73_0
-            platform_version: 2022
+      - name: Install OpenSSL
+        run: |
+          choco install openssl.light -y
+
+      - name: Set OpenSSL environment variables
+        run: |
+          $env:OPENSSL_ROOT_DIR = 'C:\Program Files\OpenSSL-Win64'
+          $env:OPENSSL_INCLUDE_DIR = 'C:\Program Files\OpenSSL-Win64\include'
+          $env:OPENSSL_LIB_DIR = 'C:\Program Files\OpenSSL-Win64\lib'
+
+      - name: Download Boost 1.73.0
+        run: |
+          Invoke-WebRequest -Uri https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.zip -OutFile boost_1_73_0.zip
+          Expand-Archive -Path boost_1_73_0.zip -DestinationPath ${{ github.workspace }}/recap_server/darkspore_server/libs
+
+      - name: Build Boost Libraries
+        working-directory: ${{ github.workspace }}/recap_server/darkspore_server/libs/boost_1_73_0
+        run: |
+          .\bootstrap.bat
+          .\b2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Run MSBuild
-        id: run_msbuild
         working-directory: ${{ github.workspace }}
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
-        
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
