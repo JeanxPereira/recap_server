@@ -28,23 +28,11 @@ jobs:
         id: install-boost
         with:
             boost_version: 1.73.0
-            boost_install_dir: ${{runner.temp}}\boost_tmp
-            platform_version: 2019
-
-      - name: Boost - Install
-        run: |
-          move "${{runner.temp}}\boost_tmp\boost\boost" "${{runner.workspace}}\recap_server\darkspore_server\libs\boost_1_73_0"
+            boost_install_dir: ${{ github.workspace }}/recap_server/darkspore_server/libs/boost_1_73_0
+            platform_version: 2022
 
       - name: Install MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
-        
-      # - name: Install Premake
-      #   uses: abel0b/setup-premake@v2.3
-      #   with:
-      #     version: "5.0.0-beta2"
-
-      # - name: Prepare source
-      #   run: premake5 vs2022
 
       - name: Run MSBuild
         id: run_msbuild
@@ -55,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
-          path: ${{runner.workspace}}\recap_server\darkspore_server\build
+          path: ${{ github.workspace }}\recap_server\darkspore_server\build
