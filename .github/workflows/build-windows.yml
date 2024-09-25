@@ -33,13 +33,17 @@ jobs:
           $env:OPENSSL_INCLUDE_DIR = 'C:\Program Files\OpenSSL-Win64\include'
           $env:OPENSSL_LIB_DIR = 'C:\Program Files\OpenSSL-Win64\lib'
 
+      - name: Instalar Dependências Necessárias
+        run: |
+          choco install python --version=3.9.0 -y
+
       - name: Instalar Strawberry Perl
         run: choco install strawberryperl -y
 
       - name: Baixar e Extrair Boost
         run: |
           # Definir a versão do Boost
-          $boostVersion = '1.73.0'
+          $boostVersion = '1.81.0'
           $boostVersionUnderscore = $boostVersion -replace '\.', '_'
 
           # Definir a URL para o arquivo zip do Boost
@@ -60,7 +64,7 @@ jobs:
           Remove-Item boost.zip
 
       - name: Construir Bibliotecas Boost
-        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_73_0
+        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_81_0
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
@@ -69,7 +73,12 @@ jobs:
             type bootstrap.log
             exit /b %ERRORLEVEL%
           )
-          .\b2.exe --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
+          .\b2.exe -d2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
+
+      - name: Exibir bootstrap.log em caso de falha
+        if: failure()
+        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_81_0
+        run: type bootstrap.log
 
       - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
