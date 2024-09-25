@@ -23,6 +23,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Configurar versão do Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
       - name: Instalar OpenSSL
         run: |
           choco install openssl.light -y
@@ -32,10 +37,6 @@ jobs:
           $env:OPENSSL_ROOT_DIR = 'C:\Program Files\OpenSSL-Win64'
           $env:OPENSSL_INCLUDE_DIR = 'C:\Program Files\OpenSSL-Win64\include'
           $env:OPENSSL_LIB_DIR = 'C:\Program Files\OpenSSL-Win64\lib'
-
-      - name: Instalar Dependências Necessárias
-        run: |
-          choco install python --version=3.9.0 -y
 
       - name: Instalar Strawberry Perl
         run: choco install strawberryperl -y
@@ -49,31 +50,38 @@ jobs:
           # Definir a URL para o arquivo zip do Boost
           $boostUrl = "https://boostorg.jfrog.io/artifactory/main/release/$boostVersion/source/boost_$boostVersionUnderscore.zip"
 
+          # Caminho para a pasta 'libs'
+          $libsPath = "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+
           # Criar o diretório 'libs' se não existir
-          if (!(Test-Path -Path "$env:GITHUB_WORKSPACE\darkspore_server\libs")) {
-            New-Item -ItemType Directory -Path "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+          if (!(Test-Path -Path $libsPath)) {
+            New-Item -ItemType Directory -Path $libsPath
           }
 
           # Baixar o Boost
           Invoke-WebRequest -Uri $boostUrl -OutFile boost.zip
 
           # Extrair o Boost para o diretório 'libs'
-          Expand-Archive -Path boost.zip -DestinationPath "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+          Expand-Archive -Path boost.zip -DestinationPath $libsPath
 
           # Remover o arquivo zip para economizar espaço
           Remove-Item boost.zip
+
+      - name: Verificar Diretório Boost
+        run: |
+          Get-ChildItem "$env:GITHUB_WORKSPACE\darkspore_server\libs"
 
       - name: Construir Bibliotecas Boost
         working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_81_0
         shell: cmd
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          call "%VSINSTALLDIR%VC\Auxiliary\Build\vcvars64.bat"
           bootstrap.bat
           if %ERRORLEVEL% neq 0 (
             type bootstrap.log
             exit /b %ERRORLEVEL%
           )
-          .\b2.exe -d2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
+          .\b2.exe -j4 -d2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
 
       - name: Exibir bootstrap.log em caso de falha
         if: failure()
