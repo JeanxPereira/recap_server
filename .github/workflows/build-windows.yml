@@ -36,6 +36,29 @@ jobs:
       - name: Instalar Strawberry Perl
         run: choco install strawberryperl -y
 
+      - name: Baixar e Extrair Boost
+        run: |
+          # Definir a versão do Boost
+          $boostVersion = '1.73.0'
+          $boostVersionUnderscore = $boostVersion -replace '\.', '_'
+
+          # Definir a URL para o arquivo zip do Boost
+          $boostUrl = "https://boostorg.jfrog.io/artifactory/main/release/$boostVersion/source/boost_$boostVersionUnderscore.zip"
+
+          # Criar o diretório 'libs' se não existir
+          if (!(Test-Path -Path "$env:GITHUB_WORKSPACE\darkspore_server\libs")) {
+            New-Item -ItemType Directory -Path "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+          }
+
+          # Baixar o Boost
+          Invoke-WebRequest -Uri $boostUrl -OutFile boost.zip
+
+          # Extrair o Boost para o diretório 'libs'
+          Expand-Archive -Path boost.zip -DestinationPath "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+
+          # Remover o arquivo zip para economizar espaço
+          Remove-Item boost.zip
+
       - name: Construir Bibliotecas Boost
         working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_73_0
         shell: cmd
