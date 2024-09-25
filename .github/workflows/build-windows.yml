@@ -37,7 +37,7 @@ jobs:
         run: choco install strawberryperl -y
 
       - name: Construir Bibliotecas Boost
-        working-directory: ${{ github.workspace }}\recap_server\darkspore_server\libs\boost_1_73_0
+        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_73_0
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
@@ -52,11 +52,11 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Executar MSBuild
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}\darkspore_server
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
-          path: ${{ github.workspace }}\recap_server\darkspore_server\build
+          path: ${{ github.workspace }}\darkspore_server\build
