@@ -11,6 +11,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  BOOST_VERSION: '1.81.0'
 
 jobs:
   build:
@@ -71,13 +72,27 @@ jobs:
         run: |
           Get-ChildItem "$env:GITHUB_WORKSPACE\libs"
 
-      - name: Definir Variável de Ambiente BOOST_ROOT
+      - name: Definir Variáveis de Ambiente do Boost
         run: |
           $env:BOOST_ROOT = "$env:GITHUB_WORKSPACE\libs\boost_1_81_0"
+          $env:BOOST_INCLUDEDIR = "$env:BOOST_ROOT"
+          $env:BOOST_LIBRARYDIR = "$env:BOOST_ROOT\stage\lib"
           Write-Host "BOOST_ROOT definido como $env:BOOST_ROOT"
+          Write-Host "BOOST_INCLUDEDIR definido como $env:BOOST_INCLUDEDIR"
+          Write-Host "BOOST_LIBRARYDIR definido como $env:BOOST_LIBRARYDIR"
+
+      - name: Restaurar Cache do Boost
+        id: boost-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.BOOST_ROOT }}\stage\lib
+            ${{ env.BOOST_ROOT }}\bin.v2
+          key: boost-${{ runner.os }}-${{ env.BOOST_VERSION }}-Release
 
       - name: Construir Bibliotecas Boost
-        working-directory: ${{ github.workspace }}\libs\boost_1_81_0
+        if: steps.boost-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ env.BOOST_ROOT }}
         shell: cmd
         run: |
           call "%VSINSTALLDIR%VC\Auxiliary\Build\vcvars64.bat"
@@ -90,7 +105,7 @@ jobs:
 
       - name: Exibir bootstrap.log em caso de falha
         if: failure()
-        working-directory: ${{ github.workspace }}\libs\boost_1_81_0
+        working-directory: ${{ env.BOOST_ROOT }}
         run: type bootstrap.log
 
       - name: Instalar MSBuild
@@ -101,7 +116,12 @@ jobs:
 
       - name: Executar MSBuild
         working-directory: ${{ github.workspace }}
-        run: msbuild darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories="$env:BOOST_ROOT"
+        run: |
+          msbuild darkspore_server.sln `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:IncludePath="$env:BOOST_INCLUDEDIR;$env:IncludePath" `
+            /p:LibraryPath="$env:BOOST_LIBRARYDIR;$env:LibraryPath"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
