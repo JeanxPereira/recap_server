@@ -21,7 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          submodules: recursive
+          submodules: true
 
       - name: Configurar versão do Python
         uses: actions/setup-python@v4
@@ -51,7 +51,7 @@ jobs:
           $boostUrl = "https://boostorg.jfrog.io/artifactory/main/release/$boostVersion/source/boost_$boostVersionUnderscore.zip"
 
           # Caminho para a pasta 'libs'
-          $libsPath = "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+          $libsPath = "$env:GITHUB_WORKSPACE\libs"
 
           # Criar o diretório 'libs' se não existir
           if (!(Test-Path -Path $libsPath)) {
@@ -69,10 +69,10 @@ jobs:
 
       - name: Verificar Diretório Boost
         run: |
-          Get-ChildItem "$env:GITHUB_WORKSPACE\darkspore_server\libs"
+          Get-ChildItem "$env:GITHUB_WORKSPACE\libs"
 
       - name: Construir Bibliotecas Boost
-        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_81_0
+        working-directory: ${{ github.workspace }}\libs\boost_1_81_0
         shell: cmd
         run: |
           call "%VSINSTALLDIR%VC\Auxiliary\Build\vcvars64.bat"
@@ -85,18 +85,21 @@ jobs:
 
       - name: Exibir bootstrap.log em caso de falha
         if: failure()
-        working-directory: ${{ github.workspace }}\darkspore_server\libs\boost_1_81_0
+        working-directory: ${{ github.workspace }}\libs\boost_1_81_0
         run: type bootstrap.log
 
       - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
+      - name: Listar Conteúdo do Diretório de Trabalho
+        run: dir ${{ github.workspace }}
+
       - name: Executar MSBuild
-        working-directory: ${{ github.workspace }}\darkspore_server
+        working-directory: ${{ github.workspace }}
         run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: recap-server-windows-x64
-          path: ${{ github.workspace }}\darkspore_server\build
+          path: ${{ github.workspace }}\build
