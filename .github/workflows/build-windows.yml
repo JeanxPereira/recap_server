@@ -12,6 +12,9 @@ on:
 env:
   BUILD_TYPE: Release
   BOOST_VERSION: '1.81.0'
+  BOOST_ROOT: ${{ github.workspace }}\libs\boost_1_81_0
+  BOOST_INCLUDEDIR: ${{ env.BOOST_ROOT }}
+  BOOST_LIBRARYDIR: ${{ env.BOOST_ROOT }}\stage\lib
 
 jobs:
   build:
@@ -72,30 +75,25 @@ jobs:
         run: |
           Get-ChildItem "$env:GITHUB_WORKSPACE\libs"
 
-      - name: Definir Variáveis de Ambiente do Boost
-        run: |
-          $env:BOOST_ROOT = "$env:GITHUB_WORKSPACE\libs\boost_1_81_0"
-          $env:BOOST_INCLUDEDIR = "$env:BOOST_ROOT"
-          $env:BOOST_LIBRARYDIR = "$env:BOOST_ROOT\stage\lib"
-          Write-Host "BOOST_ROOT definido como $env:BOOST_ROOT"
-          Write-Host "BOOST_INCLUDEDIR definido como $env:BOOST_INCLUDEDIR"
-          Write-Host "BOOST_LIBRARYDIR definido como $env:BOOST_LIBRARYDIR"
-
       - name: Restaurar Cache do Boost
         id: boost-cache
         uses: actions/cache@v3
         with:
           path: |
-            ${{ env.BOOST_ROOT }}\stage\lib
+            ${{ env.BOOST_LIBRARYDIR }}
             ${{ env.BOOST_ROOT }}\bin.v2
           key: boost-${{ runner.os }}-${{ env.BOOST_VERSION }}-Release
+
+      - name: Instalar MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Construir Bibliotecas Boost
         if: steps.boost-cache.outputs.cache-hit != 'true'
         working-directory: ${{ env.BOOST_ROOT }}
         shell: cmd
         run: |
-          call "%VSINSTALLDIR%VC\Auxiliary\Build\vcvars64.bat"
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath`) do set InstallDir=%%i
+          call "%InstallDir%\VC\Auxiliary\Build\vcvars64.bat"
           bootstrap.bat
           if %ERRORLEVEL% neq 0 (
             type bootstrap.log
@@ -108,20 +106,17 @@ jobs:
         working-directory: ${{ env.BOOST_ROOT }}
         run: type bootstrap.log
 
-      - name: Instalar MSBuild
-        uses: microsoft/setup-msbuild@v1.0.2
-
       - name: Listar Conteúdo do Diretório de Trabalho
         run: dir ${{ github.workspace }}
 
       - name: Executar MSBuild
         working-directory: ${{ github.workspace }}
         run: |
-          msbuild darkspore_server.sln `
-            /p:Configuration=Release `
-            /p:Platform=x64 `
-            /p:IncludePath="$env:BOOST_INCLUDEDIR;$env:IncludePath" `
-            /p:LibraryPath="$env:BOOST_LIBRARYDIR;$env:LibraryPath"
+          msbuild darkspore_server.sln ^
+            /p:Configuration=Release ^
+            /p:Platform=x64 ^
+            /p:IncludePath="%BOOST_INCLUDEDIR%;%INCLUDE%" ^
+            /p:LibraryPath="%BOOST_LIBRARYDIR%;%LIB%"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
