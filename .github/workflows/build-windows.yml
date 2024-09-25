@@ -71,6 +71,11 @@ jobs:
         run: |
           Get-ChildItem "$env:GITHUB_WORKSPACE\libs"
 
+      - name: Definir Variável de Ambiente BOOST_ROOT
+        run: |
+          $env:BOOST_ROOT = "$env:GITHUB_WORKSPACE\libs\boost_1_81_0"
+          Write-Host "BOOST_ROOT definido como $env:BOOST_ROOT"
+
       - name: Construir Bibliotecas Boost
         working-directory: ${{ github.workspace }}\libs\boost_1_81_0
         shell: cmd
@@ -96,7 +101,7 @@ jobs:
 
       - name: Executar MSBuild
         working-directory: ${{ github.workspace }}
-        run: msbuild .\darkspore_server.sln /p:Configuration=Release /p:Platform=x64
+        run: msbuild darkspore_server.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories="$env:BOOST_ROOT"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
