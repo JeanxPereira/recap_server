@@ -43,81 +43,38 @@ jobs:
       - name: Instalar Strawberry Perl
         run: choco install strawberryperl -y
 
-      - name: Baixar e Extrair Boost
+      - name: Instalar gdown
+        run: pip install gdown
+
+      - name: Baixar Boost Pré-compilado
+        run: |
+          gdown --id 1PoiQ581vgl3iGp5xw6DDJWP6ZI1Xkgp7 -O boost_precompiled.zip
+
+      - name: Extrair Boost Pré-compilado
         shell: powershell
         run: |
-          # Definir a versão do Boost
-          $boostVersion = '1.81.0'
-          $boostVersionUnderscore = $boostVersion -replace '\.', '_'
+          Expand-Archive -Path boost_precompiled.zip -DestinationPath $env:GITHUB_WORKSPACE\libs
+          Remove-Item boost_precompiled.zip
 
-          # Definir a URL para o arquivo zip do Boost
-          $boostUrl = "https://boostorg.jfrog.io/artifactory/main/release/$boostVersion/source/boost_$boostVersionUnderscore.zip"
-
-          # Caminho para a pasta 'libs'
-          $libsPath = "$env:GITHUB_WORKSPACE\libs"
-
-          # Criar o diretório 'libs' se não existir
-          if (!(Test-Path -Path $libsPath)) {
-            New-Item -ItemType Directory -Path $libsPath
-          }
-
-          # Baixar o Boost
-          Invoke-WebRequest -Uri $boostUrl -OutFile boost.zip
-
-          # Extrair o Boost para o diretório 'libs'
-          Expand-Archive -Path boost.zip -DestinationPath $libsPath
-
-          # Remover o arquivo zip para economizar espaço
-          Remove-Item boost.zip
+      - name: Definir Variáveis de Ambiente do Boost
+        run: |
+          set BOOST_ROOT=%GITHUB_WORKSPACE%\libs\boost_1_81_0
+          set BOOST_INCLUDEDIR=%BOOST_ROOT%\include
+          set BOOST_LIBRARYDIR=%BOOST_ROOT%\lib
 
       - name: Verificar Diretório Boost
         shell: powershell
         run: |
-          Get-ChildItem "$env:GITHUB_WORKSPACE\libs"
-
-      - name: Restaurar Cache do Boost
-        id: boost-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}\libs\boost_1_81_0\stage\lib
-            ${{ github.workspace }}\libs\boost_1_81_0\bin.v2
-          key: boost-${{ runner.os }}-${{ env.BOOST_VERSION }}-Release
+          Get-ChildItem "$env:BOOST_ROOT"
 
       - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Construir Bibliotecas Boost
-        if: steps.boost-cache.outputs.cache-hit != 'true'
-        shell: cmd
-        run: |
-          set BOOST_ROOT=${{ github.workspace }}\libs\boost_1_81_0
-          set BOOST_INCLUDEDIR=%BOOST_ROOT%
-          set BOOST_LIBRARYDIR=%BOOST_ROOT%\stage\lib
-      
-          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath`) do set InstallDir=%%i
-          call "%InstallDir%\VC\Auxiliary\Build\vcvars64.bat"
-          cd %BOOST_ROOT%
-          bootstrap.bat
-          if %ERRORLEVEL% neq 0 (
-            type bootstrap.log
-            exit /b %ERRORLEVEL%
-          )
-          .\b2.exe -j4 -d2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
-
-
-      - name: Exibir bootstrap.log em caso de falha
-        if: failure()
-        run: type ${{ github.workspace }}\libs\boost_1_81_0\bootstrap.log
-
-      - name: Listar Conteúdo do Diretório de Trabalho
-        run: dir ${{ github.workspace }}
-
       - name: Executar MSBuild
         run: |
-          set BOOST_ROOT=${{ github.workspace }}\libs\boost_1_81_0
-          set BOOST_INCLUDEDIR=%BOOST_ROOT%
-          set BOOST_LIBRARYDIR=%BOOST_ROOT%\stage\lib
+          set BOOST_ROOT=%GITHUB_WORKSPACE%\libs\boost_1_81_0
+          set BOOST_INCLUDEDIR=%BOOST_ROOT%\include
+          set BOOST_LIBRARYDIR=%BOOST_ROOT%\lib
           msbuild darkspore_server.sln ^
             /p:Configuration=Release ^
             /p:Platform=x64 ^
