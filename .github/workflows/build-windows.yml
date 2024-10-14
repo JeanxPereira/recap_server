@@ -75,7 +75,7 @@ jobs:
       - name: Verificar Diretório Boost
         shell: powershell
         run: |
-          Get-ChildItem "$env:BOOST_ROOT"
+          Get-ChildItem -Recurse "$env:BOOST_ROOT"
       
       - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
@@ -86,10 +86,11 @@ jobs:
           set BOOST_ROOT=%GITHUB_WORKSPACE%\libs\boost_1_81_0
           set BOOST_INCLUDEDIR=%BOOST_ROOT%\include
           set BOOST_LIBRARYDIR=%BOOST_ROOT%\lib
+          set PROJECT_DIR=%GITHUB_WORKSPACE%\darkspore_server
           msbuild darkspore_server.sln ^
             /p:Configuration=Release ^
             /p:Platform=x64 ^
-            /p:IncludePath="%BOOST_INCLUDEDIR%;%INCLUDE%" ^
+            /p:IncludePath="%BOOST_INCLUDEDIR%;%PROJECT_DIR%;%PROJECT_DIR%\source;%INCLUDE%" ^
             /p:LibraryPath="%BOOST_LIBRARYDIR%;%LIB%"
 
       - name: Upload artifacts
