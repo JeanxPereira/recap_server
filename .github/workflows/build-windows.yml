@@ -94,15 +94,17 @@ jobs:
           set BOOST_ROOT=${{ github.workspace }}\libs\boost_1_81_0
           set BOOST_INCLUDEDIR=%BOOST_ROOT%
           set BOOST_LIBRARYDIR=%BOOST_ROOT%\stage\lib
-
+      
           for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath`) do set InstallDir=%%i
           call "%InstallDir%\VC\Auxiliary\Build\vcvars64.bat"
+          cd %BOOST_ROOT%
           bootstrap.bat
           if %ERRORLEVEL% neq 0 (
             type bootstrap.log
             exit /b %ERRORLEVEL%
           )
           .\b2.exe -j4 -d2 --with-system --with-thread variant=release link=shared threading=multi runtime-link=shared address-model=64
+
 
       - name: Exibir bootstrap.log em caso de falha
         if: failure()
