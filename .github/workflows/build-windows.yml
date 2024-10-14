@@ -46,31 +46,42 @@ jobs:
       - name: Instalar gdown
         run: pip install gdown
 
+      - name: Restaurar Cache do Boost Pré-compilado
+        id: boost-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}\libs\boost_1_81_0
+          key: boost-precompiled-${{ runner.os }}-${{ env.BOOST_VERSION }}-Release
+      
       - name: Baixar Boost Pré-compilado
+        if: steps.boost-cache.outputs.cache-hit != 'true'
         run: |
           gdown --id 1PoiQ581vgl3iGp5xw6DDJWP6ZI1Xkgp7 -O boost_precompiled.zip
-
+      
       - name: Extrair Boost Pré-compilado
+        if: steps.boost-cache.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           Expand-Archive -Path boost_precompiled.zip -DestinationPath $env:GITHUB_WORKSPACE\libs
           Remove-Item boost_precompiled.zip
-
+      
       - name: Definir Variáveis de Ambiente do Boost
+        shell: cmd
         run: |
           set BOOST_ROOT=%GITHUB_WORKSPACE%\libs\boost_1_81_0
           set BOOST_INCLUDEDIR=%BOOST_ROOT%\include
           set BOOST_LIBRARYDIR=%BOOST_ROOT%\lib
-
+      
       - name: Verificar Diretório Boost
         shell: powershell
         run: |
           Get-ChildItem "$env:BOOST_ROOT"
-
+      
       - name: Instalar MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
-
+      
       - name: Executar MSBuild
+        shell: cmd
         run: |
           set BOOST_ROOT=%GITHUB_WORKSPACE%\libs\boost_1_81_0
           set BOOST_INCLUDEDIR=%BOOST_ROOT%\include
