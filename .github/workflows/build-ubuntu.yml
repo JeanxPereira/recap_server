@@ -1,4 +1,4 @@
-name: Build ReCap Server
+name: Build ReCap Server (Ubuntu)
 
 on:
   push:
@@ -11,8 +11,9 @@ on:
       - develop
 
 jobs:
-  build-ubuntu:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,8 +38,7 @@ jobs:
           cmake --build build
           cmake -DCOMPONENT=recap_server -Pbuild/cmake_install.cmake
 
-      - name: Upload Ubuntu binary artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: recap-server-ubuntu-x64
           path: |
@@ -55,76 +55,24 @@ jobs:
         run: |
           cd darkspore_server
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/AppDir/usr/lib
+          ./linuxdeploy-x86_64.AppImage --list-plugins
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --output appimage
           rm ./linuxdeploy-x86_64.AppImage
 
-      - name: Prepare AppImage artifacts
+      - name: Preparing artifacts (appimage-x86_64)
         run: |
           cd darkspore_server
           mkdir dist_appimage
           mv *.AppImage ./dist_appimage/
+
+      - name: Adding needed files
+        run: |
+          cd darkspore_server
           cp -r res/data dist_appimage/data
           mkdir -p dist_appimage/storage/user
           touch dist_appimage/storage/user/PLACEHOLDER
 
-      - name: Upload AppImage artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: recap-server-appimage-x86_64
           path: darkspore_server/dist_appimage
-
-  build-windows:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: ucrt64
-          update: true
-          pacboy: gcc:p cmake:p make:p
-
-      - name: Set up Perl
-        uses: shogo82148/actions-setup-perl@v1
-        with:
-          perl-version: '5.30'
-
-      - name: Set up NASM
-        uses: ilammy/setup-nasm@v1
-
-      - name: Set up Git
-        run: |
-          pacman -Syu --noconfirm
-          pacman -S --needed --noconfirm git
-
-      - name: Configure
-        run: |
-          cd darkspore_server
-          export PATH=/c/Users/runneradmin/nasm:$PATH
-          cmake . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="C:\\hostedtoolcache\\windows\\perl\\5.30.3-thr\\x64\\bin" -DCMAKE_INSTALL_PREFIX=./dist
-
-      - name: Build
-        run: |
-          cd darkspore_server/build
-          export PATH=/c/Users/runneradmin/nasm:$PATH
-          cmake --build . --config Release
-          cmake -DCOMPONENT=recap_server -Pcmake_install.cmake
-
-      - name: Prepare Windows artifacts
-        run: |
-          cd darkspore_server
-          cp -r res/data dist/bin/data
-          mkdir -p dist/bin/storage/user
-          touch dist/bin/storage/user/PLACEHOLDER
-
-      - name: Upload Windows artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: recap-server-windows-x64
-          path: ${{runner.workspace}}/recap_server/darkspore_server/dist
-
