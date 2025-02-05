@@ -21,6 +21,8 @@ namespace QoS {
 			boost::asio::ip::address get_address() const;
 			uint16_t get_port() const;
 
+			static void SetQosLogging(bool enable);
+
 		private:
 			boost::asio::io_context& mIoService;
 			boost::asio::ip::udp::socket mSocket;
@@ -28,6 +30,8 @@ namespace QoS {
 
 			DataBuffer mReadBuffer;
 			DataBuffer mWriteBuffer;
+
+			static bool mShowQosLogs;
 	};
 }
 

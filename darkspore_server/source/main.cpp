@@ -186,12 +186,25 @@ QoS::Server* Application::get_qos_server() const {
 
 // main
 int main(int argc, char* argv[]) {
-	Application& app = Application::InitApp(argc, argv);
-	if (!app.OnInit()) {
-		app.OnExit();
-		return 1;
-	}
+    bool qosMonitorEnabled = false;
+    
+    // Processa argumentos
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "--qos-monitor" || arg == "--qos-debug") {
+            qosMonitorEnabled = true;
+        }
+    }
 
-	app.Run();
-	return app.OnExit();
+    Application& app = Application::InitApp(argc, argv);
+    if (!app.OnInit()) {
+        app.OnExit();
+        return 1;
+    }
+
+    // Define o estado do monitoramento QoS
+    QoS::Server::SetQosLogging(qosMonitorEnabled);
+
+    app.Run();
+    return app.OnExit();
 }
