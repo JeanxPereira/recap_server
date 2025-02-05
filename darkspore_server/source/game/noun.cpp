@@ -7,7 +7,6 @@
 #include "utils/log.h"
 
 #include <filesystem>
-
 #include <iostream>
 
 // Game
@@ -310,38 +309,71 @@ namespace Game {
 	}
 
 	const std::shared_ptr<ClassAttributes>& PlayerClass::GetAttributes() const {
-			return mAttributes;
+		return mAttributes;
 	}
 
 	uint32_t PlayerClass::GetAbility(PlayerAbility ability) const {
-			const auto index = static_cast<uint8_t>(ability);
-			if (index < mAbilities.size()) {
-					uint32_t abilityID = utils::hash_id(mAbilities[index]);
-					std::cout << "[DEBUG] Retrieved ability for index " << static_cast<int>(index) 
-										<< ": " << abilityID << std::endl;
-					return abilityID;
-			} else {
-					std::cout << "[DEBUG] Invalid ability index: " << static_cast<int>(index) << std::endl;
-					return 0;
-			}
+		const auto index = static_cast<uint8_t>(ability);
+		return index < mAbilities.size() ? utils::hash_id(mAbilities[index]) : 0;
 	}
 
 	const glm::vec3& PlayerClass::GetSharedAbilityOffset() const {
-			std::cout << "[DEBUG] Getting sharedAbilityOffset: (" 
-								<< mSharedAbilityOffset.x << ", " 
-								<< mSharedAbilityOffset.y << ", " 
-								<< mSharedAbilityOffset.z << ")" << std::endl;
-			return mSharedAbilityOffset;
+		return mSharedAbilityOffset;
 	}
 
 	Homeworld PlayerClass::GetHomeworld() const {
-			std::cout << "[DEBUG] Getting homeworld: " << static_cast<int>(mHomeworld) << std::endl;
-			return mHomeworld;
+		return mHomeworld;
 	}
 
 	PrimaryAttribute PlayerClass::GetPrimaryAttribute() const {
-			std::cout << "[DEBUG] Getting primaryAttribute: " << static_cast<int>(mPrimaryAttribute) << std::endl;
-			return mPrimaryAttribute;
+		return mPrimaryAttribute;
+	}
+
+	// NonPlayerClass
+	void NonPlayerClass::Read(pugi::xml_node node) {
+		const auto& database = NounDatabase::Instance();
+		if (const auto& [ok, str, id] = ReadAssetString(node, "name"); ok) {
+			mName = str;
+		}
+
+		mEffect = utils::xml_get_text_node(node, "mpClassEffect");
+
+		mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
+		mNpcType = utils::xml_get_text_node<NpcType>(node, "mNPCType");
+
+		mChallengeValue = utils::xml_get_text_node<int32_t>(node, "challengeValue");
+		mNpcRank = utils::xml_get_text_node<int32_t>(node, "npcRank");
+
+		mAggroRange = utils::xml_get_text_node<float>(node, "aggroRange");
+		mAlertRange = utils::xml_get_text_node<float>(node, "alertRange");
+		mDropAggroRange = utils::xml_get_text_node<float>(node, "dropAggroRange");
+		mDropDelay = utils::xml_get_text_node<float>(node, "dropDelay");
+		mPlayerCountHealthScale = utils::xml_get_text_node<float>(node, "playerCountHealthScale");
+
+		mTargetable = utils::xml_get_text_node<bool>(node, "targetable");
+		mIsPet = utils::xml_get_text_node<bool>(node, "playerPet");
+
+		ReadListNode(node, "dropType", mDropTypes);
+		ReadListNode(node, "eliteAffix", mEliteAffixes);
+
+		if (const auto& [ok, str, id] = ReadAssetString(node, "description"); ok) {
+			mDescription = str;
+		}
+
+		for (const auto& child : node.child("longDescription")) {
+			if (!utils::string_iequals(child.name(), "entry")) {
+				continue;
+			}
+
+			if (const auto& [ok, str, id] = ReadAssetString(child, "description"); ok) {
+				mLongDescriptions.emplace(utils::hash_id(str), str);
+			}
+		}
+
+		auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
+		if (!classAttributesName.empty()) {
+			mAttributes = database.GetClassAttributes(utils::hash_id(classAttributesName));
+		}
 	}
 
 	const std::shared_ptr<ClassAttributes>& NonPlayerClass::GetAttributes() const {
