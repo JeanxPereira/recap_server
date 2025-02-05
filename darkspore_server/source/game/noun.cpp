@@ -8,6 +8,8 @@
 
 #include <filesystem>
 
+#include <iostream>
+
 // Game
 namespace Game {
 	template<typename T>
@@ -235,104 +237,111 @@ namespace Game {
 
 	// PlayerClass
 	void PlayerClass::Read(pugi::xml_node node) {
-		mName = utils::xml_get_text_node(node, "speciesName");
-		mEffect = utils::xml_get_text_node(node, "mpClassEffect");
+			std::cout << "[DEBUG] Starting to read PlayerClass from XML node." << std::endl;
 
-		mAbilities[0] = utils::xml_get_text_node(node, "basicAbility");
-		mAbilities[1] = utils::xml_get_text_node(node, "specialAbility1");
-		mAbilities[2] = utils::xml_get_text_node(node, "specialAbility2");
-		mAbilities[3] = utils::xml_get_text_node(node, "specialAbility3");
-		mAbilities[4] = utils::xml_get_text_node(node, "passiveAbility");
+			mName = utils::xml_get_text_node(node, "speciesName");
+			std::cout << "[DEBUG] speciesName: " << mName << std::endl;
 
-		if (auto sharedAbilityNode = node.child("sharedAbilityOffset")) {
-			mSharedAbilityOffset = ReadVec3(sharedAbilityNode);
-		}
+			mEffect = utils::xml_get_text_node(node, "mpClassEffect");
+			std::cout << "[DEBUG] mpClassEffect: " << mEffect << std::endl;
 
-		mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
-		mCreatureClass = utils::xml_get_text_node<uint32_t>(node, "creatureClass");
-		mPrimaryAttribute = utils::xml_get_text_node<PrimaryAttribute>(node, "primaryAttribute");
-		mUnlockLevel = utils::xml_get_text_node<int32_t>(node, "unlockLevel");
+			mAbilities[0] = utils::xml_get_text_node(node, "basicAbility");
+			std::cout << "[DEBUG] basicAbility: " << mAbilities[0] << std::endl;
 
-		mHomeworld = utils::xml_get_text_node<Homeworld>(node, "homeworld");
+			mAbilities[1] = utils::xml_get_text_node(node, "specialAbility1");
+			std::cout << "[DEBUG] specialAbility1: " << mAbilities[1] << std::endl;
 
-		mWeaponMinDamage = utils::xml_get_text_node<float>(node, "weaponMinDamage");
-		mWeaponMaxDamage = utils::xml_get_text_node<float>(node, "weaponMaxDamage");
+			mAbilities[2] = utils::xml_get_text_node(node, "specialAbility2");
+			std::cout << "[DEBUG] specialAbility2: " << mAbilities[2] << std::endl;
 
-		mNoHands = utils::xml_get_text_node<bool>(node, "noHands");
-		mNoFeet = utils::xml_get_text_node<bool>(node, "noFeet");
+			mAbilities[3] = utils::xml_get_text_node(node, "specialAbility3");
+			std::cout << "[DEBUG] specialAbility3: " << mAbilities[3] << std::endl;
 
-		auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
-		if (!classAttributesName.empty()) {
-			mAttributes = NounDatabase::Instance().GetClassAttributes(utils::hash_id(classAttributesName));
-		}
+			mAbilities[4] = utils::xml_get_text_node(node, "passiveAbility");
+			std::cout << "[DEBUG] passiveAbility: " << mAbilities[4] << std::endl;
+
+			if (auto sharedAbilityNode = node.child("sharedAbilityOffset")) {
+					mSharedAbilityOffset = ReadVec3(sharedAbilityNode);
+					std::cout << "[DEBUG] sharedAbilityOffset: (" 
+										<< mSharedAbilityOffset.x << ", " 
+										<< mSharedAbilityOffset.y << ", " 
+										<< mSharedAbilityOffset.z << ")" << std::endl;
+			} else {
+					std::cout << "[DEBUG] No sharedAbilityOffset node found." << std::endl;
+			}
+
+			mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
+			std::cout << "[DEBUG] creatureType: " << mCreatureType << std::endl;
+
+			mCreatureClass = utils::xml_get_text_node<uint32_t>(node, "creatureClass");
+			std::cout << "[DEBUG] creatureClass: " << mCreatureClass << std::endl;
+
+			mPrimaryAttribute = utils::xml_get_text_node<PrimaryAttribute>(node, "primaryAttribute");
+			std::cout << "[DEBUG] primaryAttribute: " << static_cast<int>(mPrimaryAttribute) << std::endl;
+
+			mUnlockLevel = utils::xml_get_text_node<int32_t>(node, "unlockLevel");
+			std::cout << "[DEBUG] unlockLevel: " << mUnlockLevel << std::endl;
+
+			mHomeworld = utils::xml_get_text_node<Homeworld>(node, "homeworld");
+			std::cout << "[DEBUG] homeworld: " << static_cast<int>(mHomeworld) << std::endl;
+
+			mWeaponMinDamage = utils::xml_get_text_node<float>(node, "weaponMinDamage");
+			std::cout << "[DEBUG] weaponMinDamage: " << mWeaponMinDamage << std::endl;
+
+			mWeaponMaxDamage = utils::xml_get_text_node<float>(node, "weaponMaxDamage");
+			std::cout << "[DEBUG] weaponMaxDamage: " << mWeaponMaxDamage << std::endl;
+
+			mNoHands = utils::xml_get_text_node<bool>(node, "noHands");
+			std::cout << "[DEBUG] noHands: " << (mNoHands ? "true" : "false") << std::endl;
+
+			mNoFeet = utils::xml_get_text_node<bool>(node, "noFeet");
+			std::cout << "[DEBUG] noFeet: " << (mNoFeet ? "true" : "false") << std::endl;
+
+			auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
+			std::cout << "[DEBUG] mpClassAttributes: " << classAttributesName << std::endl;
+			if (!classAttributesName.empty()) {
+					mAttributes = NounDatabase::Instance().GetClassAttributes(utils::hash_id(classAttributesName));
+					std::cout << "[DEBUG] Class attributes successfully loaded." << std::endl;
+			} else {
+					std::cout << "[DEBUG] No class attributes found." << std::endl;
+			}
+
+			std::cout << "[DEBUG] Finished reading PlayerClass from XML node." << std::endl;
 	}
 
 	const std::shared_ptr<ClassAttributes>& PlayerClass::GetAttributes() const {
-		return mAttributes;
+			return mAttributes;
 	}
 
 	uint32_t PlayerClass::GetAbility(PlayerAbility ability) const {
-		const auto index = static_cast<uint8_t>(ability);
-		return index < mAbilities.size() ? utils::hash_id(mAbilities[index]) : 0;
+			const auto index = static_cast<uint8_t>(ability);
+			if (index < mAbilities.size()) {
+					uint32_t abilityID = utils::hash_id(mAbilities[index]);
+					std::cout << "[DEBUG] Retrieved ability for index " << static_cast<int>(index) 
+										<< ": " << abilityID << std::endl;
+					return abilityID;
+			} else {
+					std::cout << "[DEBUG] Invalid ability index: " << static_cast<int>(index) << std::endl;
+					return 0;
+			}
 	}
 
 	const glm::vec3& PlayerClass::GetSharedAbilityOffset() const {
-		return mSharedAbilityOffset;
+			std::cout << "[DEBUG] Getting sharedAbilityOffset: (" 
+								<< mSharedAbilityOffset.x << ", " 
+								<< mSharedAbilityOffset.y << ", " 
+								<< mSharedAbilityOffset.z << ")" << std::endl;
+			return mSharedAbilityOffset;
 	}
 
 	Homeworld PlayerClass::GetHomeworld() const {
-		return mHomeworld;
+			std::cout << "[DEBUG] Getting homeworld: " << static_cast<int>(mHomeworld) << std::endl;
+			return mHomeworld;
 	}
 
 	PrimaryAttribute PlayerClass::GetPrimaryAttribute() const {
-		return mPrimaryAttribute;
-	}
-
-	// NonPlayerClass
-	void NonPlayerClass::Read(pugi::xml_node node) {
-		const auto& database = NounDatabase::Instance();
-		if (const auto& [ok, str, id] = ReadAssetString(node, "name"); ok) {
-			mName = str;
-		}
-
-		mEffect = utils::xml_get_text_node(node, "mpClassEffect");
-
-		mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
-		mNpcType = utils::xml_get_text_node<NpcType>(node, "mNPCType");
-
-		mChallengeValue = utils::xml_get_text_node<int32_t>(node, "challengeValue");
-		mNpcRank = utils::xml_get_text_node<int32_t>(node, "npcRank");
-
-		mAggroRange = utils::xml_get_text_node<float>(node, "aggroRange");
-		mAlertRange = utils::xml_get_text_node<float>(node, "alertRange");
-		mDropAggroRange = utils::xml_get_text_node<float>(node, "dropAggroRange");
-		mDropDelay = utils::xml_get_text_node<float>(node, "dropDelay");
-		mPlayerCountHealthScale = utils::xml_get_text_node<float>(node, "playerCountHealthScale");
-
-		mTargetable = utils::xml_get_text_node<bool>(node, "targetable");
-		mIsPet = utils::xml_get_text_node<bool>(node, "playerPet");
-
-		ReadListNode(node, "dropType", mDropTypes);
-		ReadListNode(node, "eliteAffix", mEliteAffixes);
-
-		if (const auto& [ok, str, id] = ReadAssetString(node, "description"); ok) {
-			mDescription = str;
-		}
-
-		for (const auto& child : node.child("longDescription")) {
-			if (!utils::string_iequals(child.name(), "entry")) {
-				continue;
-			}
-
-			if (const auto& [ok, str, id] = ReadAssetString(child, "description"); ok) {
-				mLongDescriptions.emplace(utils::hash_id(str), str);
-			}
-		}
-
-		auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
-		if (!classAttributesName.empty()) {
-			mAttributes = database.GetClassAttributes(utils::hash_id(classAttributesName));
-		}
+			std::cout << "[DEBUG] Getting primaryAttribute: " << static_cast<int>(mPrimaryAttribute) << std::endl;
+			return mPrimaryAttribute;
 	}
 
 	const std::shared_ptr<ClassAttributes>& NonPlayerClass::GetAttributes() const {
