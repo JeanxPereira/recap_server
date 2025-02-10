@@ -964,14 +964,14 @@ namespace Game {
 
 	bool NounDatabase::Load() {
 		mLoaded = true;
-		LoadPhases()
-		LoadCharacterAnimations()
-		LoadAIDefinitions()
-		LoadClassAttributes()
-		LoadNpcAffixes()
-		LoadPlayerClasses()
-		LoadNonPlayerClasses()
-		LoadNouns()
+		LoadPhases();
+		LoadCharacterAnimations();
+		LoadAIDefinitions();
+		LoadClassAttributes();
+		LoadNpcAffixes();
+		LoadPlayerClasses();
+		LoadNonPlayerClasses();
+		LoadNouns();
 		return true;
 	}
 
