@@ -923,14 +923,14 @@ namespace Game {
 
 	bool NounDatabase::Load() {
 		mLoaded = true;
-		if (!LoadPhases()) { return false; }
-		if (!LoadCharacterAnimations()) { return false; }
-		if (!LoadAIDefinitions()) { return false; }
-		if (!LoadClassAttributes()) { return false; }
-		if (!LoadNpcAffixes()) { return false; }
-		if (!LoadPlayerClasses()) { return false; }
-		if (!LoadNonPlayerClasses()) { return false; }
-		if (!LoadNouns()) { return false; }
+		LoadPhases()
+		LoadCharacterAnimations()
+		LoadAIDefinitions()
+		LoadClassAttributes()
+		LoadNpcAffixes()
+		LoadPlayerClasses()
+		LoadNonPlayerClasses()
+		LoadNouns()
 		return true;
 	}
 
