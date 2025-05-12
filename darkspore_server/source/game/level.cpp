@@ -1,4 +1,3 @@
-
 // Include
 #include "level.h"
 
@@ -13,6 +12,7 @@ namespace Game {
 	const std::string levelDataPath = "data/level/";
 
 	const auto read_list = [](pugi::xml_node node, std::string_view nodeName, auto& list) {
+		GAME_LOG_DEBUG("Reading list: {}", nodeName);
 		for (const auto& child : node.child(nodeName.data())) {
 			if (!utils::string_iequals(child.name(), "entry")) {
 				continue;
@@ -21,6 +21,7 @@ namespace Game {
 			decltype(auto) data = list.emplace_back();
 			data.Read(child);
 		}
+		GAME_LOG_DEBUG("Finished reading list: {}, items: {}", nodeName, list.size());
 	};
 
 	const auto read_vec3 = [](pugi::xml_node node) {
@@ -33,53 +34,74 @@ namespace Game {
 
 	// TriggerVolumeEvents
 	void TriggerVolumeEvents::Read(pugi::xml_node node) {
+		GAME_LOG_DEBUG("Reading TriggerVolumeEvents");
 		mOnEnter = utils::xml_get_text_node(node, "onEnterEvent");
 		mOnExit = utils::xml_get_text_node(node, "onExitEvent");
+		GAME_LOG_DEBUG("TriggerVolumeEvents - onEnter: {}, onExit: {}", mOnEnter, mOnExit);
 	}
 
 	// TriggerVolumeData
 	void TriggerVolumeData::Read(pugi::xml_node node) {
-		mShape = utils::xml_get_text_node<TriggerVolumeShape>(node, "shape");
-		mActivationType = utils::xml_get_text_node<TriggerVolumeActivationType>(node, "triggerActivationType");
+		GAME_LOG_DEBUG("Reading TriggerVolumeData");
+		try {
+			mShape = utils::xml_get_text_node<TriggerVolumeShape>(node, "shape");
+			mActivationType = utils::xml_get_text_node<TriggerVolumeActivationType>(node, "triggerActivationType");
 
-		mOffset = read_vec3(node.child("offset"));
+			if (!node.child("offset")) {
+				GAME_LOG_WARNING("TriggerVolumeData: Missing offset node");
+			} else {
+				mOffset = read_vec3(node.child("offset"));
+			}
 
-		mOnEnter = utils::xml_get_text_node(node, "onEnter");
-		mOnExit = utils::xml_get_text_node(node, "onExit");
-		mOnStay = utils::xml_get_text_node(node, "onStay");
-		mLuaCallbackOnEnter = utils::xml_get_text_node(node, "luaCallbackOnEnter");
-		mLuaCallbackOnExit = utils::xml_get_text_node(node, "luaCallbackOnExit");
-		mLuaCallbackOnStay = utils::xml_get_text_node(node, "luaCallbackOnStay");
+			mOnEnter = utils::xml_get_text_node(node, "onEnter");
+			mOnExit = utils::xml_get_text_node(node, "onExit");
+			mOnStay = utils::xml_get_text_node(node, "onStay");
+			mLuaCallbackOnEnter = utils::xml_get_text_node(node, "luaCallbackOnEnter");
+			mLuaCallbackOnExit = utils::xml_get_text_node(node, "luaCallbackOnExit");
+			mLuaCallbackOnStay = utils::xml_get_text_node(node, "luaCallbackOnStay");
 
-		mTimeToActivate = utils::xml_get_text_node<float>(node, "timeToActivate");
+			mTimeToActivate = utils::xml_get_text_node<float>(node, "timeToActivate");
 
-		mUseObjectDimensions = utils::xml_get_text_node<bool>(node, "useGameObjectDimensions");
-		mIsKinematic = utils::xml_get_text_node<bool>(node, "isKinematic");
-		mPersistentTimer = utils::xml_get_text_node<bool>(node, "persistentTimer");
-		mTriggerOnceOnly = utils::xml_get_text_node<bool>(node, "triggerOnceOnly");
-		mTriggerIfNotBeaten = utils::xml_get_text_node<bool>(node, "triggerIfNotBeaten");
+			mUseObjectDimensions = utils::xml_get_text_node<bool>(node, "useGameObjectDimensions");
+			mIsKinematic = utils::xml_get_text_node<bool>(node, "isKinematic");
+			mPersistentTimer = utils::xml_get_text_node<bool>(node, "persistentTimer");
+			mTriggerOnceOnly = utils::xml_get_text_node<bool>(node, "triggerOnceOnly");
+			mTriggerIfNotBeaten = utils::xml_get_text_node<bool>(node, "triggerIfNotBeaten");
 
-		switch (mShape) {
-			case TriggerVolumeShape::Sphere:
-				mBoundingBox.extent = glm::vec3(utils::xml_get_text_node<float>(node, "sphereRadius"));
-				break;
+			switch (mShape) {
+				case TriggerVolumeShape::Sphere:
+					mBoundingBox.extent = glm::vec3(utils::xml_get_text_node<float>(node, "sphereRadius"));
+					GAME_LOG_DEBUG("TriggerVolumeData: Sphere radius: {}", mBoundingBox.extent.x);
+					break;
 
-			case TriggerVolumeShape::Box:
-				mBoundingBox.extent = glm::vec3(
-					utils::xml_get_text_node<float>(node, "boxWidth"),
-					utils::xml_get_text_node<float>(node, "boxHeight"),
-					utils::xml_get_text_node<float>(node, "boxLength")
-				);
-				break;
+				case TriggerVolumeShape::Box:
+					mBoundingBox.extent = glm::vec3(
+						utils::xml_get_text_node<float>(node, "boxWidth"),
+						utils::xml_get_text_node<float>(node, "boxHeight"),
+						utils::xml_get_text_node<float>(node, "boxLength")
+					);
+					GAME_LOG_DEBUG("TriggerVolumeData: Box dimensions: {}x{}x{}", 
+						mBoundingBox.extent.x, mBoundingBox.extent.y, mBoundingBox.extent.z);
+					break;
 
-			case TriggerVolumeShape::Capsule:
-				auto radius = utils::xml_get_text_node<float>(node, "capsuleRadius");
-				mBoundingBox.extent = glm::vec3(radius, utils::xml_get_text_node<float>(node, "capsuleHeight"), radius);
-				break;
-		}
+				case TriggerVolumeShape::Capsule:
+					auto radius = utils::xml_get_text_node<float>(node, "capsuleRadius");
+					mBoundingBox.extent = glm::vec3(radius, utils::xml_get_text_node<float>(node, "capsuleHeight"), radius);
+					GAME_LOG_DEBUG("TriggerVolumeData: Capsule radius: {}, height: {}", 
+						radius, mBoundingBox.extent.y);
+					break;
+			}
 
-		if (auto eventsNode = node.child("events")) {
-			mEvents.Read(eventsNode);
+			if (auto eventsNode = node.child("events")) {
+				mEvents.Read(eventsNode);
+			} else {
+				GAME_LOG_DEBUG("TriggerVolumeData: No events node found");
+			}
+			
+			GAME_LOG_DEBUG("TriggerVolumeData successfully read");
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in TriggerVolumeData::Read: {}", e.what());
+			throw;
 		}
 	}
 
@@ -105,12 +127,26 @@ namespace Game {
 
 	// TeleporterData
 	void TeleporterData::Read(pugi::xml_node node) {
-		mDestinationMarkerId = utils::xml_get_text_node<uint32_t>(node, "destinationMarkerId");
-		mDeferTriggerCreation = utils::xml_get_text_node<bool>(node, "deferTriggerCreation");
+		GAME_LOG_DEBUG("Reading TeleporterData");
+		try {
+			mDestinationMarkerId = utils::xml_get_text_node<uint32_t>(node, "destinationMarkerId");
+			mDeferTriggerCreation = utils::xml_get_text_node<bool>(node, "deferTriggerCreation");
+			
+			GAME_LOG_DEBUG("TeleporterData: destinationMarkerId: {}, deferTriggerCreation: {}", 
+				mDestinationMarkerId, mDeferTriggerCreation);
 
-		if (auto triggerVolumeNode = node.child("triggerVolume")) {
-			mTriggerVolumeData = std::make_unique<TriggerVolumeData>();
-			mTriggerVolumeData->Read(triggerVolumeNode);
+			if (auto triggerVolumeNode = node.child("triggerVolume")) {
+				GAME_LOG_DEBUG("TeleporterData: Creating trigger volume");
+				mTriggerVolumeData = std::make_unique<TriggerVolumeData>();
+				mTriggerVolumeData->Read(triggerVolumeNode);
+			} else {
+				GAME_LOG_WARNING("TeleporterData: No trigger volume node found");
+			}
+			
+			GAME_LOG_DEBUG("TeleporterData successfully read");
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in TeleporterData::Read: {}", e.what());
+			throw;
 		}
 	}
 
@@ -128,13 +164,22 @@ namespace Game {
 
 	// MarkerInteractableData
 	void MarkerInteractableData::Read(pugi::xml_node node) {
-		mAbility = utils::xml_get_text_node(node, "interactableAbility");
-		mStartInteractEvent = utils::xml_get_text_node(node, "startInteractEvent");
-		mEndInteractEvent = utils::xml_get_text_node(node, "endInteractEvent");
-		mOptionalInteractEvent = utils::xml_get_text_node(node, "optionalInteractEvent");
+		GAME_LOG_DEBUG("Reading MarkerInteractableData");
+		try {
+			mAbility = utils::xml_get_text_node(node, "interactableAbility");
+			mStartInteractEvent = utils::xml_get_text_node(node, "startInteractEvent");
+			mEndInteractEvent = utils::xml_get_text_node(node, "endInteractEvent");
+			mOptionalInteractEvent = utils::xml_get_text_node(node, "optionalInteractEvent");
 
-		mUsesAllowed = utils::xml_get_text_node<int32_t>(node, "numUsesAllowed");
-		mChallengeValue = utils::xml_get_text_node<int32_t>(node, "challengeValue");
+			mUsesAllowed = utils::xml_get_text_node<int32_t>(node, "numUsesAllowed");
+			mChallengeValue = utils::xml_get_text_node<int32_t>(node, "challengeValue");
+			
+			GAME_LOG_DEBUG("MarkerInteractableData: ability: {}, uses: {}, challenge: {}", 
+				mAbility, mUsesAllowed, mChallengeValue);
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in MarkerInteractableData::Read: {}", e.what());
+			throw;
+		}
 	}
 
 	const std::string& MarkerInteractableData::GetAbility() const {
@@ -163,40 +208,74 @@ namespace Game {
 
 	// Marker
 	void Marker::Read(pugi::xml_node node) {
-		mName = utils::xml_get_text_node(node, "markerName");
-		mId = utils::xml_get_text_node<uint32_t>(node, "markerId");
-		mNounName = utils::xml_get_text_node(node, "nounDef");
-		mNoun = utils::hash_id(mNounName);
+		GAME_LOG_DEBUG("Reading Marker");
+		try {
+			mName = utils::xml_get_text_node(node, "markerName");
+			mId = utils::xml_get_text_node<uint32_t>(node, "markerId");
+			mNounName = utils::xml_get_text_node(node, "nounDef");
+			mNoun = utils::hash_id(mNounName);
 
-		mPosition = read_vec3(node.child("pos"));
-		mRotation = read_vec3(node.child("rotDegrees"));
-		mScale = utils::xml_get_text_node<float>(node, "scale");
+			GAME_LOG_DEBUG("Marker: name: {}, id: {}, nounName: {}, noun hash: {}", 
+				mName, mId, mNounName, mNoun);
 
-		mVisible = utils::xml_get_text_node<bool>(node, "visible");
-		mHasCollision = utils::xml_get_text_node<bool>(node, "createWithCollision");
-
-		mOverrideAssetId = utils::xml_get_text_node<uint64_t>(node, "assetOverrideId");
-		mTargetId = utils::xml_get_text_node<uint32_t>(node, "targetMarkerId");
-
-		if (auto componentDataNode = node.child("componentData")) {
-			if (auto teleporterNode = componentDataNode.child("teleporter")) {
-				mTeleporterData = std::make_unique<TeleporterData>();
-				mTeleporterData->Read(teleporterNode);
+			if (!node.child("pos")) {
+				GAME_LOG_WARNING("Marker {}: Missing position node", mName);
+				mPosition = glm::vec3(0.0f);
+			} else {
+				mPosition = read_vec3(node.child("pos"));
 			}
 
-			if (auto interactableNode = componentDataNode.child("interactable")) {
-				mInteractableData = std::make_unique<MarkerInteractableData>();
-				mInteractableData->Read(interactableNode);
+			if (!node.child("rotDegrees")) {
+				GAME_LOG_WARNING("Marker {}: Missing rotation node", mName);
+				mRotation = glm::vec3(0.0f);
+			} else {
+				mRotation = read_vec3(node.child("rotDegrees"));
 			}
-			/*
-			SharedComponentData->add("eventListenerDef", nullable_type, std::tuple(0x08, EventListenerDef));
-			SharedComponentData->add("spawnPointDef", nullable_type, std::tuple(0x10, SpawnPointDef));
-			SharedComponentData->add("spawnTrigger", nullable_type, std::tuple(0x0C, SpawnTriggerDef));
-			SharedComponentData->add("defaultGfxState", nullable_type, std::tuple(0x18, GameObjectGfxStateTuning));
-			SharedComponentData->add("combatant", nullable_type, std::tuple(0x1C, CombatantDef));
-			SharedComponentData->add("triggerComponent", nullable_type, std::tuple(0x20, TriggerVolumeComponentDef));
-			SharedComponentData->add("spaceshipSpawnPoint", nullable_type, std::tuple(0x24, SpaceshipSpawnPointDef));
-			*/
+
+			mScale = utils::xml_get_text_node<float>(node, "scale");
+			
+			GAME_LOG_DEBUG("Marker {}: pos: [{}, {}, {}], rot: [{}, {}, {}], scale: {}", 
+				mName, mPosition.x, mPosition.y, mPosition.z, 
+				mRotation.x, mRotation.y, mRotation.z, mScale);
+
+			mVisible = utils::xml_get_text_node<bool>(node, "visible");
+			mHasCollision = utils::xml_get_text_node<bool>(node, "createWithCollision");
+
+			mOverrideAssetId = utils::xml_get_text_node<uint64_t>(node, "assetOverrideId");
+			mTargetId = utils::xml_get_text_node<uint32_t>(node, "targetMarkerId");
+
+			if (auto componentDataNode = node.child("componentData")) {
+				GAME_LOG_DEBUG("Marker {}: Reading component data", mName);
+				
+				if (auto teleporterNode = componentDataNode.child("teleporter")) {
+					GAME_LOG_DEBUG("Marker {}: Creating teleporter data", mName);
+					mTeleporterData = std::make_unique<TeleporterData>();
+					mTeleporterData->Read(teleporterNode);
+				}
+
+				if (auto interactableNode = componentDataNode.child("interactable")) {
+					GAME_LOG_DEBUG("Marker {}: Creating interactable data", mName);
+					mInteractableData = std::make_unique<MarkerInteractableData>();
+					mInteractableData->Read(interactableNode);
+				}
+				/*
+				SharedComponentData->add("eventListenerDef", nullable_type, std::tuple(0x08, EventListenerDef));
+				SharedComponentData->add("spawnPointDef", nullable_type, std::tuple(0x10, SpawnPointDef));
+				SharedComponentData->add("spawnTrigger", nullable_type, std::tuple(0x0C, SpawnTriggerDef));
+				SharedComponentData->add("defaultGfxState", nullable_type, std::tuple(0x18, GameObjectGfxStateTuning));
+				SharedComponentData->add("combatant", nullable_type, std::tuple(0x1C, CombatantDef));
+				SharedComponentData->add("triggerComponent", nullable_type, std::tuple(0x20, TriggerVolumeComponentDef));
+				SharedComponentData->add("spaceshipSpawnPoint", nullable_type, std::tuple(0x24, SpaceshipSpawnPointDef));
+				*/
+			} else {
+				GAME_LOG_DEBUG("Marker {}: No component data found", mName);
+			}
+			
+			GAME_LOG_DEBUG("Marker {} successfully read", mName);
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in Marker::Read for marker name {}, id {}: {}", 
+				mName, mId, e.what());
+			throw;
 		}
 	}
 
@@ -242,9 +321,10 @@ namespace Game {
 
 	// Markerset
 	bool Markerset::Load(const std::string& path) {
+		GAME_LOG_INFO("Loading markerset: {}", path);
 		const std::string fullPath = levelDataPath + path;
 		if (!std::filesystem::exists(fullPath)) {
-			std::cout << "Markerset: Could not find '" << fullPath << "'." << std::endl;
+			GAME_LOG_ERROR("Markerset: Could not find '{}'", fullPath);
 			return false;
 		}
 
@@ -252,27 +332,55 @@ namespace Game {
 		if (auto parse_result = document.load_file(fullPath.c_str())) {
 			auto node = document.child("markerset");
 			if (node) {
-				Read(node);
-				return true;
+				try {
+					Read(node);
+					GAME_LOG_INFO("Markerset {} loaded successfully with {} markers", 
+						path, mMarkers.size());
+					return true;
+				} catch (const std::exception& e) {
+					GAME_LOG_ERROR("Exception while reading markerset {}: {}", path, e.what());
+					return false;
+				}
+			} else {
+				GAME_LOG_ERROR("Markerset {}: Missing root 'markerset' node", path);
 			}
 		} else {
-			std::cout << "Markerset: Could not load '" << path << "'." << std::endl;
+			GAME_LOG_ERROR("Markerset: Could not parse '{}'. Error: {} at offset {}", 
+				path, parse_result.description(), parse_result.offset);
 		}
 		return false;
 	}
 
 	void Markerset::Read(pugi::xml_node node) {
-		for (const auto& child : node.child("markers")) {
+		GAME_LOG_DEBUG("Reading markerset");
+		int markerCount = 0;
+		
+		auto markersNode = node.child("markers");
+		if (!markersNode) {
+			GAME_LOG_WARNING("Markerset: No markers node found");
+			return;
+		}
+		
+		for (const auto& child : markersNode) {
 			if (!utils::string_iequals(child.name(), "entry")) {
 				continue;
 			}
 
-			auto marker = std::make_shared<Marker>();
-			marker->Read(child);
+			try {
+				auto marker = std::make_shared<Marker>();
+				marker->Read(child);
 
-			mMarkersByNoun[marker->mNoun].push_back(marker);
-			mMarkers.push_back(std::move(marker));
+				mMarkersByNoun[marker->mNoun].push_back(marker);
+				mMarkers.push_back(std::move(marker));
+				markerCount++;
+			} catch (const std::exception& e) {
+				GAME_LOG_ERROR("Exception while reading marker entry #{}: {}", 
+					markerCount, e.what());
+				// Continue with next marker even if this one failed
+			}
 		}
+		
+		GAME_LOG_DEBUG("Finished reading markerset, loaded {} markers", markerCount);
 	}
 
 	const std::vector<MarkerPtr>& Markerset::GetMarkers() const {
@@ -281,19 +389,30 @@ namespace Game {
 
 	std::vector<MarkerPtr> Markerset::GetMarkersByType(uint32_t noun) const {
 		if (auto it = mMarkersByNoun.find(noun); it != mMarkersByNoun.end()) {
+			GAME_LOG_DEBUG("Found {} markers with noun {}", it->second.size(), noun);
 			return it->second;
 		}
+		GAME_LOG_DEBUG("No markers found with noun {}", noun);
 		return {};
 	}
 
 	// DirectorClass
 	void DirectorClass::Read(pugi::xml_node node) {
-		mNounName = utils::xml_get_text_node(node, "mpNoun");
+		GAME_LOG_DEBUG("Reading DirectorClass");
+		try {
+			mNounName = utils::xml_get_text_node(node, "mpNoun");
 
-		mMinLevel = utils::xml_get_text_node<int32_t>(node, "minDifficulty");
-		mMaxLevel = utils::xml_get_text_node<int32_t>(node, "maxDifficulty");
+			mMinLevel = utils::xml_get_text_node<int32_t>(node, "minDifficulty");
+			mMaxLevel = utils::xml_get_text_node<int32_t>(node, "maxDifficulty");
 
-		mHordeLegal = utils::xml_get_text_node<bool>(node, "hordeLegal");
+			mHordeLegal = utils::xml_get_text_node<bool>(node, "hordeLegal");
+			
+			GAME_LOG_DEBUG("DirectorClass: noun: {}, min: {}, max: {}, hordeLegal: {}", 
+				mNounName, mMinLevel, mMaxLevel, mHordeLegal);
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in DirectorClass::Read: {}", e.what());
+			throw;
+		}
 	}
 
 	const std::string& DirectorClass::GetNounName() const {
@@ -314,11 +433,25 @@ namespace Game {
 
 	// LevelConfig
 	void LevelConfig::Read(pugi::xml_node node) {
-		read_list(node, "minion", mMinions);
-		read_list(node, "special", mSpecial);
-		read_list(node, "boss", mBoss);
-		read_list(node, "agent", mAgent);
-		read_list(node, "captain", mCaptain);
+		GAME_LOG_DEBUG("Reading LevelConfig");
+		if (!node) {
+			GAME_LOG_WARNING("LevelConfig: Null node provided");
+			return;
+		}
+		
+		try {
+			read_list(node, "minion", mMinions);
+			read_list(node, "special", mSpecial);
+			read_list(node, "boss", mBoss);
+			read_list(node, "agent", mAgent);
+			read_list(node, "captain", mCaptain);
+			
+			GAME_LOG_DEBUG("LevelConfig: minions: {}, special: {}, boss: {}, agent: {}, captain: {}", 
+				mMinions.size(), mSpecial.size(), mBoss.size(), mAgent.size(), mCaptain.size());
+		} catch (const std::exception& e) {
+			GAME_LOG_ERROR("Exception in LevelConfig::Read: {}", e.what());
+			throw;
+		}
 	}
 
 	DirectorClass LevelConfig::GetMinion(size_t idx) const {
@@ -343,64 +476,118 @@ namespace Game {
 
 	// Level
 	Level::Level() {
-
+		GAME_LOG_DEBUG("Level constructor called");
 	}
 
 	Level::~Level() {
-
+		GAME_LOG_DEBUG("Level destructor called");
 	}
 
 	bool Level::Load(const std::string& difficultyName, const std::string& levelName) {
+		GAME_LOG_INFO("Loading level: {}/{}", difficultyName, levelName);
 		const std::string fullPath = levelDataPath + difficultyName + "/" + levelName + ".level.xml";
 		if (!std::filesystem::exists(fullPath)) {
-			std::cout << "Level: Could not find '" << fullPath << "'." << std::endl;
+			GAME_LOG_ERROR("Level: Could not find '{}'", fullPath);
 			return false;
 		}
 
 		pugi::xml_document document;
 		if (auto parse_result = document.load_file(fullPath.c_str())) {
+			GAME_LOG_DEBUG("Level file parsed successfully");
+			
 			auto node = document.child("level");
 			if (!node) {
+				GAME_LOG_ERROR("Level {}/{}: Missing root 'level' node", difficultyName, levelName);
+				return false;
+			}
+			
+			GAME_LOG_DEBUG("Loading markersets for level {}/{}", difficultyName, levelName);
+			int markersetCount = 0;
+			auto markersetsNode = node.child("markersets");
+			
+			if (!markersetsNode) {
+				GAME_LOG_WARNING("Level {}/{}: No markersets node found", difficultyName, levelName);
+			} else {
+				for (const auto& child : markersetsNode) {
+					if (!utils::string_iequals(child.name(), "entry")) {
+						continue;
+					}
+
+					try {
+						const auto markersetAsset = utils::xml_get_text_node(child, "markersetAsset");
+						if (markersetAsset.empty()) {
+							GAME_LOG_WARNING("Level {}/{}: Empty markerset asset", difficultyName, levelName);
+							continue;
+						}
+
+						GAME_LOG_DEBUG("Level {}/{}: Loading markerset {}", 
+							difficultyName, levelName, markersetAsset);
+							
+						const auto& [it, added] = mMarkersets.try_emplace(utils::hash_id(markersetAsset));
+						if (added) {
+							it->second.mName = markersetAsset;
+							if (it->second.Load(difficultyName + "/" + markersetAsset + ".xml")) {
+								markersetCount++;
+							}
+						} else {
+							GAME_LOG_DEBUG("Markerset {} already loaded", markersetAsset);
+						}
+					} catch (const std::exception& e) {
+						GAME_LOG_ERROR("Exception while loading markerset entry: {}", e.what());
+						// Continue with next markerset even if this one failed
+					}
+				}
+			}
+			GAME_LOG_INFO("Loaded {} markersets for level {}/{}", markersetCount, difficultyName, levelName);
+
+			try {
+				GAME_LOG_DEBUG("Loading level config for {}/{}", difficultyName, levelName);
+				auto configNode = node.child("levelConfig");
+				if (configNode) {
+					mConfig.Read(configNode);
+				} else {
+					GAME_LOG_WARNING("Level {}/{}: No levelConfig node found", difficultyName, levelName);
+				}
+				
+				auto firstTimeConfigNode = node.child("firstTimeConfig");
+				if (firstTimeConfigNode) {
+					mFirstTimeConfig.Read(firstTimeConfigNode);
+				} else {
+					GAME_LOG_WARNING("Level {}/{}: No firstTimeConfig node found", difficultyName, levelName);
+				}
+
+				const auto planetConfigName = utils::xml_get_text_node(node, "planetConfig");
+				if (!planetConfigName.empty()) {
+					GAME_LOG_DEBUG("Level {}/{}: Found planetConfig: {}", 
+						difficultyName, levelName, planetConfigName);
+					// mPlanetConfig.Read(open_the_file);
+				}
+			} catch (const std::exception& e) {
+				GAME_LOG_ERROR("Exception while reading level configurations for {}/{}: {}", 
+					difficultyName, levelName, e.what());
 				return false;
 			}
 
-			for (const auto& child : node.child("markersets")) {
-				if (!utils::string_iequals(child.name(), "entry")) {
-					continue;
-				}
-
-				const auto markersetAsset = utils::xml_get_text_node(child, "markersetAsset");
-				if (markersetAsset.empty()) {
-					continue;
-				}
-
-				const auto& [it, added] = mMarkersets.try_emplace(utils::hash_id(markersetAsset));
-				if (added) {
-					it->second.mName = markersetAsset;
-					it->second.Load(difficultyName + "/" + markersetAsset + ".xml");
-				}
-			}
-
-			mConfig.Read(node.child("levelConfig"));
-			mFirstTimeConfig.Read(node.child("firstTimeConfig"));
-
-			const auto planetConfigName = utils::xml_get_text_node(node, "planetConfig");
-			if (!planetConfigName.empty()) {
-				// mPlanetConfig.Read(open_the_file);
-			}
-
+			GAME_LOG_INFO("Level {}/{} loaded successfully", difficultyName, levelName);
 			return true;
 		} else {
-			std::cout << "Level: Could not load '" << fullPath << "'." << std::endl;
+			GAME_LOG_ERROR("Level: Could not parse '{}'. Error: {} at offset {}", 
+				fullPath, parse_result.description(), parse_result.offset);
 		}
 		return false;
 	}
 
 	bool Level::GetMarkerset(const std::string& name, Markerset& markerset) const {
-		if (auto it = mMarkersets.find(utils::hash_id(name)); it != mMarkersets.end()) {
+		uint32_t nameHash = utils::hash_id(name);
+		GAME_LOG_DEBUG("Getting markerset: {} (hash: {})", name, nameHash);
+		
+		if (auto it = mMarkersets.find(nameHash); it != mMarkersets.end()) {
 			markerset = it->second;
+			GAME_LOG_DEBUG("Found markerset: {} with {} markers", name, markerset.GetMarkers().size());
 			return true;
 		}
+		
+		GAME_LOG_WARNING("Markerset not found: {}", name);
 		return false;
 	}
 
