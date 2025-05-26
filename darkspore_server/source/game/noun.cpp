@@ -7,6 +7,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include <filesystem>
+#include <type_traits>
 
 // Game
 namespace Game {
@@ -19,7 +20,9 @@ namespace Game {
 					data = child.as<std::string>("");
 				} else if constexpr (std::is_class_v<T>) {
 					data.Read(child);
-				} else if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T> || std::is_enum_v<T>) {
+				} else if constexpr (std::is_enum_v<T>) {
+					data = static_cast<T>(child.as<std::underlying_type_t<T>>(0));
+				} else if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T>) {
 					data = child.as<T>(T{});
 				}
 			}
