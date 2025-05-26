@@ -46,6 +46,7 @@ CPMAddPackage("gh:zeux/pugixml@1.15")
 target_link_libraries(recap_server PRIVATE pugixml)
 
 # yaml-cpp
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 CPMAddPackage(
   NAME yaml-cpp
   GITHUB_REPOSITORY jbeder/yaml-cpp
