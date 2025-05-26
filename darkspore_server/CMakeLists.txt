@@ -46,7 +46,7 @@ CPMAddPackage("gh:zeux/pugixml@1.15")
 target_link_libraries(recap_server PRIVATE pugixml)
 
 # yaml-cpp
-CPMAddPackage("gh:jbeder/yaml-cpp@0.8.0")
+CPMAddPackage("gh:jbeder/yaml-cpp@main")
 target_link_libraries(recap_server PRIVATE yaml-cpp)
 
 # RapidJSON
