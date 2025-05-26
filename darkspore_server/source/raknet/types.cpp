@@ -1,6 +1,7 @@
 
 // Include
 #include "types.h"
+#include "game/object.h"
 #include "utils/functions.h"
 
 #include <numbers>
