@@ -135,7 +135,6 @@ namespace RakNet {
 		JuggernautResults,		// 0x12
 		KillRaceLobby,			// 0x13
 		KillRaceResults,		// 0x14
-
 		Count					// 0x15
 	};
 
@@ -740,7 +739,7 @@ namespace RakNet {
 			}
 
 			// Ability
-			/* case ActionCommand::UseCharacterAbility: {
+			case ActionCommand::UseCharacterAbility: {
 				Read<ActionCommandAbilityData>(mInStream, command.ability);
 
 				//
@@ -777,26 +776,6 @@ namespace RakNet {
 					mGame.MoveObject(object, *locomotionData);
 				}
 
-				break;
-			} */
-
-			case ActionCommand::UseCharacterAbility:
-			{
-				// Ler os dados do comando
-				Read<ActionCommandAbilityData>(mInStream, command.ability);
-
-				// Configurar a resposta básica
-				AbilityCommandResponse actionResponse;
-				actionResponse.abilityId = player->GetAbilityId(player->GetCurrentDeckIndex(), command.ability.index);
-				actionResponse.cooldown = 100;
-				actionResponse.timeImmobilized = 0;
-				actionResponse.userData = command.ability.userData;
-
-				// Enviar apenas a resposta básica, sem tentar fazer nada mais complexo
-				SendActionCommandResponse(client, actionResponse);
-
-				// Log simples
-				std::cout << "DEBUG: Resposta básica enviada para UseCharacterAbility" << std::endl;
 				break;
 			}
 

@@ -1,10 +1,10 @@
-
 #ifndef _GAME_LEVEL_HEADER
 #define _GAME_LEVEL_HEADER
 
 // Include
 #include "noun.h"
 
+#include <yaml-cpp/yaml.h>
 #include <unordered_map>
 #include <memory>
 
@@ -28,7 +28,7 @@ namespace Game {
 	// TriggerVolumeEvents
 	class TriggerVolumeEvents {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 		private:
 			std::string mOnEnter;
@@ -38,7 +38,7 @@ namespace Game {
 	// TriggerVolumeData
 	class TriggerVolumeData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const BoundingBox& GetBoundingBox() const;
 
@@ -78,7 +78,7 @@ namespace Game {
 	// TeleporterData
 	class TeleporterData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::unique_ptr<TriggerVolumeData>& GetTriggerVolumeData() const;
 
@@ -97,7 +97,7 @@ namespace Game {
 	// MarkerInteractableData
 	class MarkerInteractableData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::string& GetAbility() const;
 			const std::string& GetStartInteractEvent() const;
@@ -120,7 +120,7 @@ namespace Game {
 	// Marker
 	class Marker {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::unique_ptr<TeleporterData>& GetTeleporterData() const;
 			const std::unique_ptr<MarkerInteractableData>& GetInteractableData() const;
@@ -169,7 +169,7 @@ namespace Game {
 		public:
 			bool Load(const std::string& path);
 
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::vector<MarkerPtr>& GetMarkers() const;
 			std::vector<MarkerPtr> GetMarkersByType(uint32_t noun) const;
@@ -186,7 +186,7 @@ namespace Game {
 	// DirectorClass
 	class DirectorClass {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::string& GetNounName() const;
 
@@ -207,7 +207,7 @@ namespace Game {
 	// LevelConfig
 	class LevelConfig {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			DirectorClass GetMinion(size_t idx) const;
 			DirectorClass GetSpecial(size_t idx) const;

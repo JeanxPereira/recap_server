@@ -147,7 +147,7 @@ namespace Blaze {
 				return;
 			}
 
-			// std::cout << "Label: " << mHeader.label << ", Type: " << static_cast<int>(mHeader.type) << std::endl;
+			std::cout << "Label: " << mHeader.label << ", Type: " << static_cast<int>(mHeader.type) << std::endl;
 			switch (mHeader.type) {
 				case Type::Integer: {
 					rapidjson::Value value = ReadInteger(buffer);

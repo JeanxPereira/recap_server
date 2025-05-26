@@ -1,4 +1,3 @@
-
 // Include
 #include "noun.h"
 #include "config.h"
@@ -6,71 +5,70 @@
 #include "utils/functions.h"
 #include "utils/log.h"
 
+#include <yaml-cpp/yaml.h>
 #include <filesystem>
 
 // Game
 namespace Game {
 	template<typename T>
-	void ReadListNode(const pugi::xml_node& node, std::string_view nodeName, std::vector<T>& list) {
-		for (const auto& child : node.child(nodeName.data())) {
-			if (!utils::string_iequals(child.name(), "entry")) {
-				continue;
-			}
-
-			decltype(auto) data = list.emplace_back();
-			if constexpr (std::is_same_v<T, std::string>) {
-				data = child.text().get();
-			} else if constexpr (std::is_class_v<T>) {
-				data.Read(child);
-			} else if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T> || std::is_enum_v<T>) {
-				std::string_view nodeText = child.text().get();
-				data = utils::to_number<T>(nodeText);
+	void ReadListNode(const YAML::Node& node, std::string_view nodeName, std::vector<T>& list) {
+		if (node[nodeName.data()] && node[nodeName.data()].IsSequence()) {
+			for (const auto& child : node[nodeName.data()]) {
+				decltype(auto) data = list.emplace_back();
+				if constexpr (std::is_same_v<T, std::string>) {
+					data = child.as<std::string>("");
+				} else if constexpr (std::is_class_v<T>) {
+					data.Read(child);
+				} else if constexpr (std::is_integral_v<T> || std::is_floating_point_v<T> || std::is_enum_v<T>) {
+					data = child.as<T>(T{});
+				}
 			}
 		}
 	}
 
-	auto ReadAssetString(const pugi::xml_node& node, std::string_view nodeName) {
+	auto ReadAssetString(const YAML::Node& node, std::string_view nodeName) {
 		// Haven't checked all files if its just "AssetStrings!hash_id(str)" but if it is you could just ignore that one.
 		using namespace std::string_literals;
-		if (auto childNode = node.child(nodeName.data())) {
+		if (node[nodeName.data()]) {
 			return std::make_tuple(
 				true,
-				utils::xml_get_text_node(childNode, "str"),
-				utils::xml_get_text_node(childNode, "id")
+				node[nodeName.data()]["str"].as<std::string>(""),
+				node[nodeName.data()]["id"].as<std::string>("")
 			);
 		}
 		return std::make_tuple(false, ""s, ""s);
 	}
 
-	glm::vec3 ReadVec3(pugi::xml_node node) {
+	glm::vec3 ReadVec3(const YAML::Node& node) {
 		glm::vec3 data {};
-		data.x = utils::xml_get_text_node<float>(node, "x");
-		data.y = utils::xml_get_text_node<float>(node, "y");
-		data.z = utils::xml_get_text_node<float>(node, "z");
+		data.x = node["x"].as<float>(0.0f);
+		data.y = node["y"].as<float>(0.0f);
+		data.z = node["z"].as<float>(0.0f);
 		return data;
 	}
 
 	// DoorData
-	void DoorData::Read(pugi::xml_node node) {
-		mClickToOpen = utils::xml_get_text_node<bool>(node, "clickToOpen");
-		mClickToClose = utils::xml_get_text_node<bool>(node, "clickToClose");
-		mInitialState = utils::xml_get_text_node<DoorState>(node, "initialState");
+	void DoorData::Read(const YAML::Node& node) {
+		mClickToOpen = node["clickToOpen"].as<bool>(false);
+		mClickToClose = node["clickToClose"].as<bool>(false);
+		mInitialState = static_cast<DoorState>(node["initialState"].as<uint8_t>(0));
 	}
 
 	// SwitchData
-	void SwitchData::Read(pugi::xml_node node) {
+	void SwitchData::Read(const YAML::Node& node) {
 		// Empty
 	}
 
 	// PressureSwitchData
-	void PressureSwitchData::Read(pugi::xml_node node) {
-		if (auto volumeNode = node.child("volume")) {
-			switch (utils::xml_get_text_node<uint32_t>(volumeNode, "shape")) {
+	void PressureSwitchData::Read(const YAML::Node& node) {
+		if (node["volume"]) {
+			const auto& volumeNode = node["volume"];
+			switch (volumeNode["shape"].as<uint32_t>(0)) {
 				// Sphere
 				case 2: {
 					mShape.sphere = BoundingSphere(
 						glm::zero<glm::vec3>(),
-						utils::xml_get_text_node<float>(volumeNode, "sphereRadius")
+						volumeNode["sphereRadius"].as<float>(1.0f)
 					);
 					break;
 				}
@@ -79,9 +77,9 @@ namespace Game {
 				case 3: {
 					mShape.box = BoundingBox();
 					mShape.box.extent = 0.5f * glm::vec3(
-						utils::xml_get_text_node<float>(volumeNode, "boxWidth"),
-						utils::xml_get_text_node<float>(volumeNode, "boxHeight"),
-						utils::xml_get_text_node<float>(volumeNode, "boxLength")
+						volumeNode["boxWidth"].as<float>(1.0f),
+						volumeNode["boxHeight"].as<float>(1.0f),
+						volumeNode["boxLength"].as<float>(1.0f)
 					);
 					break;
 				}
@@ -90,8 +88,8 @@ namespace Game {
 				case 4: {
 					mShape.capsule = BoundingCapsule(
 						glm::zero<glm::vec3>(),
-						utils::xml_get_text_node<float>(volumeNode, "capsuleRadius"),
-						utils::xml_get_text_node<float>(volumeNode, "capsuleHeight")
+						volumeNode["capsuleRadius"].as<float>(1.0f),
+						volumeNode["capsuleHeight"].as<float>(1.0f)
 					);
 					break;
 				}
@@ -100,12 +98,12 @@ namespace Game {
 	}
 
 	// CollisionVolume
-	void CollisionVolume::Read(pugi::xml_node node) {
-		mBoxExtents.x = utils::xml_get_text_node<float>(node, "boxWidth");
-		mBoxExtents.y = utils::xml_get_text_node<float>(node, "boxLength");
-		mBoxExtents.z = utils::xml_get_text_node<float>(node, "boxHeight");
-		mSphereRadius = utils::xml_get_text_node<float>(node, "sphereRadius");
-		mShape = utils::xml_get_text_node<CollisionShape>(node, "shape");
+	void CollisionVolume::Read(const YAML::Node& node) {
+		mBoxExtents.x = node["boxWidth"].as<float>(1.0f);
+		mBoxExtents.y = node["boxLength"].as<float>(1.0f);
+		mBoxExtents.z = node["boxHeight"].as<float>(1.0f);
+		mSphereRadius = node["sphereRadius"].as<float>(1.0f);
+		mShape = static_cast<CollisionShape>(node["shape"].as<uint8_t>(0));
 	}
 
 	const glm::vec3& CollisionVolume::GetBoxExtents() const {
@@ -121,18 +119,18 @@ namespace Game {
 	}
 
 	// ProjectileData
-	void ProjectileData::Read(pugi::xml_node node) {
-		if (auto childNode = node.child("creatureCollisionVolume")) {
+	void ProjectileData::Read(const YAML::Node& node) {
+		if (node["creatureCollisionVolume"]) {
 			mCreatureCollisionVolume = std::make_unique<CollisionVolume>();
-			mCreatureCollisionVolume->Read(childNode);
+			mCreatureCollisionVolume->Read(node["creatureCollisionVolume"]);
 		}
 
-		if (auto childNode = node.child("otherCollisionVolume")) {
+		if (node["otherCollisionVolume"]) {
 			mOtherCollisionVolume = std::make_unique<CollisionVolume>();
-			mOtherCollisionVolume->Read(childNode);
+			mOtherCollisionVolume->Read(node["otherCollisionVolume"]);
 		}
 
-		mTargetType = utils::xml_get_text_node<TargetType>(node, "targetType");
+		mTargetType = static_cast<TargetType>(node["targetType"].as<uint32_t>(0));
 	}
 
 	const std::unique_ptr<CollisionVolume>& ProjectileData::GetCreatureCollisionVolume() const {
@@ -148,10 +146,10 @@ namespace Game {
 	}
 
 	// OrbitData
-	void OrbitData::Read(pugi::xml_node node) {
-		mHeight = utils::xml_get_text_node<float>(node, "orbitHeight");
-		mRadius = utils::xml_get_text_node<float>(node, "orbitRadius");
-		mSpeed = utils::xml_get_text_node<float>(node, "orbitSpeed");
+	void OrbitData::Read(const YAML::Node& node) {
+		mHeight = node["orbitHeight"].as<float>(0.0f);
+		mRadius = node["orbitRadius"].as<float>(0.0f);
+		mSpeed = node["orbitSpeed"].as<float>(0.0f);
 	}
 
 	float OrbitData::GetHeight() const {
@@ -167,30 +165,30 @@ namespace Game {
 	}
 
 	// ClassAttributes
-	void ClassAttributes::Read(pugi::xml_node node) {
-		mBaseAttributes[ClassAttribute::Health] = utils::xml_get_text_node<float>(node, "baseHealth");
-		mBaseAttributes[ClassAttribute::Mana] = utils::xml_get_text_node<float>(node, "baseMana");
-		mBaseAttributes[ClassAttribute::Strength] = utils::xml_get_text_node<float>(node, "baseStrength");
-		mBaseAttributes[ClassAttribute::Dexterity] = utils::xml_get_text_node<float>(node, "baseDexterity");
-		mBaseAttributes[ClassAttribute::Mind] = utils::xml_get_text_node<float>(node, "baseMind");
-		mBaseAttributes[ClassAttribute::PhysicalDefense] = utils::xml_get_text_node<float>(node, "basePhysicalDefense");
-		mBaseAttributes[ClassAttribute::MagicalDefense] = utils::xml_get_text_node<float>(node, "baseMagicalDefense");
-		mBaseAttributes[ClassAttribute::EnergyDefense] = utils::xml_get_text_node<float>(node, "baseEnergyDefense");
-		mBaseAttributes[ClassAttribute::Critical] = utils::xml_get_text_node<float>(node, "baseCritical");
-		mBaseAttributes[ClassAttribute::CombatSpeed] = utils::xml_get_text_node<float>(node, "baseCombatSpeed");
-		mBaseAttributes[ClassAttribute::NonCombatSpeed] = utils::xml_get_text_node<float>(node, "baseNonCombatSpeed");
-		mBaseAttributes[ClassAttribute::StealthDetection] = utils::xml_get_text_node<float>(node, "baseStealthDetection");
-		mBaseAttributes[ClassAttribute::MovementSpeedBuff] = utils::xml_get_text_node<float>(node, "baseMovementSpeedBuff");
+	void ClassAttributes::Read(const YAML::Node& node) {
+		mBaseAttributes[ClassAttribute::Health] = node["baseHealth"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::Mana] = node["baseMana"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::Strength] = node["baseStrength"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::Dexterity] = node["baseDexterity"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::Mind] = node["baseMind"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::PhysicalDefense] = node["basePhysicalDefense"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::MagicalDefense] = node["baseMagicalDefense"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::EnergyDefense] = node["baseEnergyDefense"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::Critical] = node["baseCritical"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::CombatSpeed] = node["baseCombatSpeed"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::NonCombatSpeed] = node["baseNonCombatSpeed"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::StealthDetection] = node["baseStealthDetection"].as<float>(0.0f);
+		mBaseAttributes[ClassAttribute::MovementSpeedBuff] = node["baseMovementSpeedBuff"].as<float>(0.0f);
 
-		mMaxAttributes[ClassAttribute::Health] = utils::xml_get_text_node<float>(node, "maxHealth");
-		mMaxAttributes[ClassAttribute::Mana] = utils::xml_get_text_node<float>(node, "maxMana");
-		mMaxAttributes[ClassAttribute::Strength] = utils::xml_get_text_node<float>(node, "maxStrength");
-		mMaxAttributes[ClassAttribute::Dexterity] = utils::xml_get_text_node<float>(node, "maxDexterity");
-		mMaxAttributes[ClassAttribute::Mind] = utils::xml_get_text_node<float>(node, "maxMind");
-		mMaxAttributes[ClassAttribute::PhysicalDefense] = utils::xml_get_text_node<float>(node, "maxPhysicalDefense");
-		mMaxAttributes[ClassAttribute::MagicalDefense] = utils::xml_get_text_node<float>(node, "maxMagicalDefense");
-		mMaxAttributes[ClassAttribute::EnergyDefense] = utils::xml_get_text_node<float>(node, "maxEnergyDefense");
-		mMaxAttributes[ClassAttribute::Critical] = utils::xml_get_text_node<float>(node, "maxCritical");
+		mMaxAttributes[ClassAttribute::Health] = node["maxHealth"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::Mana] = node["maxMana"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::Strength] = node["maxStrength"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::Dexterity] = node["maxDexterity"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::Mind] = node["maxMind"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::PhysicalDefense] = node["maxPhysicalDefense"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::MagicalDefense] = node["maxMagicalDefense"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::EnergyDefense] = node["maxEnergyDefense"].as<float>(0.0f);
+		mMaxAttributes[ClassAttribute::Critical] = node["maxCritical"].as<float>(0.0f);
 	}
 
 	float ClassAttributes::GetBaseAttribute(ClassAttribute::Key key) const {
@@ -208,10 +206,10 @@ namespace Game {
 	}
 
 	// NpcAffix
-	void NpcAffix::Read(pugi::xml_node node) {
-		mChildName = utils::xml_get_text_node(node, "mpChildAffix");
-		mParentName = utils::xml_get_text_node(node, "mpParentAffix");
-		mModifier = utils::xml_get_text_node(node, "modifier");
+	void NpcAffix::Read(const YAML::Node& node) {
+		mChildName = node["mpChildAffix"].as<std::string>("");
+		mParentName = node["mpParentAffix"].as<std::string>("");
+		mModifier = node["modifier"].as<std::string>("");
 	}
 
 	const std::shared_ptr<NpcAffix>& NpcAffix::GetChild() const {
@@ -223,45 +221,45 @@ namespace Game {
 	}
 
 	// EliteAffix
-	void EliteAffix::Read(pugi::xml_node node) {
-		mMinDifficulty = utils::xml_get_text_node<int32_t>(node, "minDifficulty");
-		mMaxDifficulty = utils::xml_get_text_node<int32_t>(node, "maxDifficulty");
+	void EliteAffix::Read(const YAML::Node& node) {
+		mMinDifficulty = node["minDifficulty"].as<int32_t>(0);
+		mMaxDifficulty = node["maxDifficulty"].as<int32_t>(0);
 
-		auto affixName = utils::xml_get_text_node(node, "mpNPCAffix");
+		auto affixName = node["mpNPCAffix"].as<std::string>("");
 		if (!affixName.empty()) {
 			mNpcAffix = NounDatabase::Instance().GetNpcAffix(utils::hash_id(affixName));
 		}
 	}
 
 	// PlayerClass
-	void PlayerClass::Read(pugi::xml_node node) {
-		mName = utils::xml_get_text_node(node, "speciesName");
-		mEffect = utils::xml_get_text_node(node, "mpClassEffect");
+	void PlayerClass::Read(const YAML::Node& node) {
+		mName = node["speciesName"].as<std::string>("");
+		mEffect = node["mpClassEffect"].as<std::string>("");
 
-		mAbilities[0] = utils::xml_get_text_node(node, "basicAbility");
-		mAbilities[1] = utils::xml_get_text_node(node, "specialAbility1");
-		mAbilities[2] = utils::xml_get_text_node(node, "specialAbility2");
-		mAbilities[3] = utils::xml_get_text_node(node, "specialAbility3");
-		mAbilities[4] = utils::xml_get_text_node(node, "passiveAbility");
+		mAbilities[0] = node["basicAbility"].as<std::string>("");
+		mAbilities[1] = node["specialAbility1"].as<std::string>("");
+		mAbilities[2] = node["specialAbility2"].as<std::string>("");
+		mAbilities[3] = node["specialAbility3"].as<std::string>("");
+		mAbilities[4] = node["passiveAbility"].as<std::string>("");
 
-		if (auto sharedAbilityNode = node.child("sharedAbilityOffset")) {
-			mSharedAbilityOffset = ReadVec3(sharedAbilityNode);
+		if (node["sharedAbilityOffset"]) {
+			mSharedAbilityOffset = ReadVec3(node["sharedAbilityOffset"]);
 		}
 
-		mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
-		mCreatureClass = utils::xml_get_text_node<uint32_t>(node, "creatureClass");
-		mPrimaryAttribute = utils::xml_get_text_node<PrimaryAttribute>(node, "primaryAttribute");
-		mUnlockLevel = utils::xml_get_text_node<int32_t>(node, "unlockLevel");
+		mCreatureType = node["creatureType"].as<uint32_t>(0);
+		mCreatureClass = node["creatureClass"].as<uint32_t>(0);
+		mPrimaryAttribute = static_cast<PrimaryAttribute>(node["primaryAttribute"].as<uint32_t>(0xFFFFFFFF));
+		mUnlockLevel = node["unlockLevel"].as<int32_t>(0);
 
-		mHomeworld = utils::xml_get_text_node<Homeworld>(node, "homeworld");
+		mHomeworld = static_cast<Homeworld>(node["homeworld"].as<uint32_t>(0));
 
-		mWeaponMinDamage = utils::xml_get_text_node<float>(node, "weaponMinDamage");
-		mWeaponMaxDamage = utils::xml_get_text_node<float>(node, "weaponMaxDamage");
+		mWeaponMinDamage = node["weaponMinDamage"].as<float>(0.0f);
+		mWeaponMaxDamage = node["weaponMaxDamage"].as<float>(0.0f);
 
-		mNoHands = utils::xml_get_text_node<bool>(node, "noHands");
-		mNoFeet = utils::xml_get_text_node<bool>(node, "noFeet");
+		mNoHands = node["noHands"].as<bool>(false);
+		mNoFeet = node["noFeet"].as<bool>(false);
 
-		auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
+		auto classAttributesName = node["mpClassAttributes"].as<std::string>("");
 		if (!classAttributesName.empty()) {
 			mAttributes = NounDatabase::Instance().GetClassAttributes(utils::hash_id(classAttributesName));
 		}
@@ -289,28 +287,28 @@ namespace Game {
 	}
 
 	// NonPlayerClass
-	void NonPlayerClass::Read(pugi::xml_node node) {
+	void NonPlayerClass::Read(const YAML::Node& node) {
 		const auto& database = NounDatabase::Instance();
 		if (const auto& [ok, str, id] = ReadAssetString(node, "name"); ok) {
 			mName = str;
 		}
 
-		mEffect = utils::xml_get_text_node(node, "mpClassEffect");
+		mEffect = node["mpClassEffect"].as<std::string>("");
 
-		mCreatureType = utils::xml_get_text_node<uint32_t>(node, "creatureType");
-		mNpcType = utils::xml_get_text_node<NpcType>(node, "mNPCType");
+		mCreatureType = node["creatureType"].as<uint32_t>(0);
+		mNpcType = static_cast<NpcType>(node["mNPCType"].as<uint32_t>(0));
 
-		mChallengeValue = utils::xml_get_text_node<int32_t>(node, "challengeValue");
-		mNpcRank = utils::xml_get_text_node<int32_t>(node, "npcRank");
+		mChallengeValue = node["challengeValue"].as<int32_t>(0);
+		mNpcRank = node["npcRank"].as<int32_t>(0);
 
-		mAggroRange = utils::xml_get_text_node<float>(node, "aggroRange");
-		mAlertRange = utils::xml_get_text_node<float>(node, "alertRange");
-		mDropAggroRange = utils::xml_get_text_node<float>(node, "dropAggroRange");
-		mDropDelay = utils::xml_get_text_node<float>(node, "dropDelay");
-		mPlayerCountHealthScale = utils::xml_get_text_node<float>(node, "playerCountHealthScale");
+		mAggroRange = node["aggroRange"].as<float>(0.0f);
+		mAlertRange = node["alertRange"].as<float>(0.0f);
+		mDropAggroRange = node["dropAggroRange"].as<float>(0.0f);
+		mDropDelay = node["dropDelay"].as<float>(0.0f);
+		mPlayerCountHealthScale = node["playerCountHealthScale"].as<float>(0.0f);
 
-		mTargetable = utils::xml_get_text_node<bool>(node, "targetable");
-		mIsPet = utils::xml_get_text_node<bool>(node, "playerPet");
+		mTargetable = node["targetable"].as<bool>(false);
+		mIsPet = node["playerPet"].as<bool>(false);
 
 		ReadListNode(node, "dropType", mDropTypes);
 		ReadListNode(node, "eliteAffix", mEliteAffixes);
@@ -319,17 +317,15 @@ namespace Game {
 			mDescription = str;
 		}
 
-		for (const auto& child : node.child("longDescription")) {
-			if (!utils::string_iequals(child.name(), "entry")) {
-				continue;
-			}
-
-			if (const auto& [ok, str, id] = ReadAssetString(child, "description"); ok) {
-				mLongDescriptions.emplace(utils::hash_id(str), str);
+		if (node["longDescription"] && node["longDescription"].IsSequence()) {
+			for (const auto& child : node["longDescription"]) {
+				if (const auto& [ok, str, id] = ReadAssetString(child, "description"); ok) {
+					mLongDescriptions.emplace(utils::hash_id(str), str);
+				}
 			}
 		}
 
-		auto classAttributesName = utils::xml_get_text_node(node, "mpClassAttributes");
+		auto classAttributesName = node["mpClassAttributes"].as<std::string>("");
 		if (!classAttributesName.empty()) {
 			mAttributes = database.GetClassAttributes(utils::hash_id(classAttributesName));
 		}
@@ -376,28 +372,28 @@ namespace Game {
 	}
 
 	// AssetProperty
-	void AssetProperty::Read(pugi::xml_node node) {
-		mName = utils::xml_get_text_node(node, "name");
-		mValue = utils::xml_get_text_node(node, "value");
+	void AssetProperty::Read(const YAML::Node& node) {
+		mName = node["name"].as<std::string>("");
+		mValue = node["value"].as<std::string>("");
 
-		mKey = utils::xml_get_text_node<uint32_t>(node, "key");
-		mType = utils::xml_get_text_node<uint32_t>(node, "type");
+		mKey = node["key"].as<uint32_t>(0);
+		mType = node["type"].as<uint32_t>(0);
 	}
 
 	// GambitDefinition
-	void GambitDefinition::Read(pugi::xml_node node) {
+	void GambitDefinition::Read(const YAML::Node& node) {
 		ReadListNode(node, "conditionProps", mConditionProperties);
 		ReadListNode(node, "abilityProps", mAbilityProperties);
 		
-		if (const auto& value = utils::xml_get_text_node(node, "condition"); !value.empty()) {
+		if (const auto& value = node["condition"].as<std::string>(""); !value.empty()) {
 			mCondition = utils::hash_id(value);
 		}
 
-		if (const auto& value = utils::xml_get_text_node(node, "ability"); !value.empty()) {
+		if (const auto& value = node["ability"].as<std::string>(""); !value.empty()) {
 			mAbility = utils::hash_id(value);
 		}
 
-		mRandomizeCooldown = utils::xml_get_text_node<bool>(node, "randomizeCooldown");
+		mRandomizeCooldown = node["randomizeCooldown"].as<bool>(false);
 	}
 
 	const std::vector<AssetProperty>& GambitDefinition::GetConditionProperties() const {
@@ -417,12 +413,12 @@ namespace Game {
 	}
 
 	// Phase
-	void Phase::Read(pugi::xml_node node) {
+	void Phase::Read(const YAML::Node& node) {
 		ReadListNode(node, "gambit", mGambit);
 
-		mType = utils::xml_get_text_node<PhaseType>(node, "phaseType");
+		mType = static_cast<PhaseType>(node["phaseType"].as<uint8_t>(0));
 
-		mIsStartNode = utils::xml_get_text_node<bool>(node, "startNode");
+		mIsStartNode = node["startNode"].as<bool>(false);
 	}
 
 	const std::vector<GambitDefinition>& Phase::GetGambit() const {
@@ -438,25 +434,25 @@ namespace Game {
 	}
 
 	// AINode
-	void AINode::Read(pugi::xml_node node) {
+	void AINode::Read(const YAML::Node& node) {
 		const auto& database = NounDatabase::Instance();
 
 		ReadListNode(node, "output", mOutput);
 
-		auto phaseName = utils::xml_get_text_node(node, "mpPhaseData");
+		auto phaseName = node["mpPhaseData"].as<std::string>("");
 		if (!phaseName.empty()) {
 			mPhase = database.GetPhase(utils::hash_id(phaseName));
 		}
 
 		/*
-		auto conditionName = utils::xml_get_text_node(node, "mpConditionData");
+		auto conditionName = node["mpConditionData"].as<std::string>("");
 		if (!conditionName.empty()) {
 			mCondition = database.GetCondition(utils::hash_id(conditionName));
 		}
 		*/
 
-		mX = utils::xml_get_text_node<int32_t>(node, "nodeX");
-		mY = utils::xml_get_text_node<int32_t>(node, "nodeY");
+		mX = node["nodeX"].as<int32_t>(0);
+		mY = node["nodeY"].as<int32_t>(0);
 	}
 
 	const std::shared_ptr<Phase>& AINode::GetPhaseData() const {
@@ -468,37 +464,37 @@ namespace Game {
 	}
 
 	// AIDefinition
-	void AIDefinition::Read(pugi::xml_node node) {
+	void AIDefinition::Read(const YAML::Node& node) {
 		ReadListNode(node, "ainode", mNodes);
 
 		// Ability
-		if (const auto& value = utils::xml_get_text_node(node, "deathAbility"); !value.empty()) { mDeathAbility = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "deathCondition"); !value.empty()) { mDeathCondition = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "firstAggroAbility"); !value.empty()) { mFirstAggroAbility = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "firstAggroAbility2"); !value.empty()) { mSecondaryFirstAggroAbility = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "firstAlertAbility"); !value.empty()) { mFirstAlertAbility = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "subsequentAggroAbility"); !value.empty()) { mSubsequentAggroAbility = utils::hash_id(value); }
-		if (const auto& value = utils::xml_get_text_node(node, "passiveAbility"); !value.empty()) { mPassiveAbility = utils::hash_id(value); }
+		if (const auto& value = node["deathAbility"].as<std::string>(""); !value.empty()) { mDeathAbility = utils::hash_id(value); }
+		if (const auto& value = node["deathCondition"].as<std::string>(""); !value.empty()) { mDeathCondition = utils::hash_id(value); }
+		if (const auto& value = node["firstAggroAbility"].as<std::string>(""); !value.empty()) { mFirstAggroAbility = utils::hash_id(value); }
+		if (const auto& value = node["firstAggroAbility2"].as<std::string>(""); !value.empty()) { mSecondaryFirstAggroAbility = utils::hash_id(value); }
+		if (const auto& value = node["firstAlertAbility"].as<std::string>(""); !value.empty()) { mFirstAlertAbility = utils::hash_id(value); }
+		if (const auto& value = node["subsequentAggroAbility"].as<std::string>(""); !value.empty()) { mSubsequentAggroAbility = utils::hash_id(value); }
+		if (const auto& value = node["passiveAbility"].as<std::string>(""); !value.empty()) { mPassiveAbility = utils::hash_id(value); }
 
 		// Behavior
-		mCombatIdle = utils::xml_get_text_node(node, "combatIdle");
-		mSecondaryCombatIdle = utils::xml_get_text_node(node, "combatIdle2");
-		mSecondaryCombatIdleCondition = utils::xml_get_text_node(node, "combatIdle2Condition");
-		mPassiveIdle = utils::xml_get_text_node(node, "passiveIdle");
-		mPreAggroIdle = utils::xml_get_text_node(node, "preAggroIdle");
-		mSecondaryPreAggroIdle = utils::xml_get_text_node(node, "preAggroIdle2");
-		mTargetTooFar = utils::xml_get_text_node(node, "targetTooFar");
+		mCombatIdle = node["combatIdle"].as<std::string>("");
+		mSecondaryCombatIdle = node["combatIdle2"].as<std::string>("");
+		mSecondaryCombatIdleCondition = node["combatIdle2Condition"].as<std::string>("");
+		mPassiveIdle = node["passiveIdle"].as<std::string>("");
+		mPreAggroIdle = node["preAggroIdle"].as<std::string>("");
+		mSecondaryPreAggroIdle = node["preAggroIdle2"].as<std::string>("");
+		mTargetTooFar = node["targetTooFar"].as<std::string>("");
 
-		mAggroType = utils::xml_get_text_node<uint32_t>(node, "aggroType");
-		mCombatIdleCooldown = utils::xml_get_text_node<uint32_t>(node, "combatIdleCooldown");
-		mSecondaryCombatIdleCooldown = utils::xml_get_text_node<uint32_t>(node, "combatIdle2Cooldown");
-		mTargetTooFarCooldown = utils::xml_get_text_node<uint32_t>(node, "targetTooFarCooldown");
+		mAggroType = node["aggroType"].as<uint32_t>(0);
+		mCombatIdleCooldown = node["combatIdleCooldown"].as<uint32_t>(0);
+		mSecondaryCombatIdleCooldown = node["combatIdle2Cooldown"].as<uint32_t>(0);
+		mTargetTooFarCooldown = node["targetTooFarCooldown"].as<uint32_t>(0);
 
-		mUseSecondaryStart = utils::xml_get_text_node<float>(node, "useSecondaryStart");
+		mUseSecondaryStart = node["useSecondaryStart"].as<float>(0.0f);
 
-		mFaceTarget = utils::xml_get_text_node<bool>(node, "faceTarget");
-		mAlwaysRun = utils::xml_get_text_node<bool>(node, "alwaysRunAI");
-		mRandomizeCooldowns = utils::xml_get_text_node<bool>(node, "randomizeCooldowns");
+		mFaceTarget = node["faceTarget"].as<bool>(false);
+		mAlwaysRun = node["alwaysRunAI"].as<bool>(false);
+		mRandomizeCooldowns = node["randomizeCooldowns"].as<bool>(false);
 	}
 
 	const std::vector<AINode>& AIDefinition::GetNodes() const {
@@ -546,7 +542,7 @@ namespace Game {
 	}
 
 	// CharacterAnimation
-	void CharacterAnimation::Read(pugi::xml_node node) {
+	void CharacterAnimation::Read(const YAML::Node& node) {
 		// TODO: Change this into constexpr data + loop
 		/*
 			CharacterAnimation->add("gaitOverlay", uint32_t_type, 0x050);
@@ -554,152 +550,152 @@ namespace Game {
 			CharacterAnimation->add("ignoreGait", bool_type, 0x054);
 			CharacterAnimation->add("morphology", key_type, 0x064);
 		*/
-		if (auto value = utils::xml_get_text_node(node, "preAggroIdleAnimState"); !value.empty()) {
+		if (auto value = node["preAggroIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::PreAggro)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "idleAnimState"); !value.empty()) {
+		if (auto value = node["idleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Idle)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "lobbyIdleAnimState"); !value.empty()) {
+		if (auto value = node["lobbyIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::LobbyIdle)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "specialIdleAnimState"); !value.empty()) {
+		if (auto value = node["specialIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::SpecialIdle)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "walkStopState"); !value.empty()) {
+		if (auto value = node["walkStopState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::WalkStop)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "victoryIdleAnimState"); !value.empty()) {
+		if (auto value = node["victoryIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::VictoryIdle)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "combatIdleAnimState"); !value.empty()) {
+		if (auto value = node["combatIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::CombatIdle)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "moveAnimState"); !value.empty()) {
+		if (auto value = node["moveAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Move)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "combatMoveAnimState"); !value.empty()) {
+		if (auto value = node["combatMoveAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::CombatMove)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "deathAnimState"); !value.empty()) {
+		if (auto value = node["deathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Death)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "aggroAnimState"); !value.empty()) {
+		if (auto value = node["aggroAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Aggro)] = AnimationData(
 				utils::hash_id(value),
-				utils::xml_get_text_node<float>(node, "aggroAnimDuration")
+				node["aggroAnimDuration"].as<float>(0.0f)
 			);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "subsequentAggroAnimState"); !value.empty()) {
+		if (auto value = node["subsequentAggroAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::SubsequentAggro)] = AnimationData(
 				utils::hash_id(value),
-				utils::xml_get_text_node<float>(node, "subsequentAggroAnimDuration")
+				node["subsequentAggroAnimDuration"].as<float>(0.0f)
 			);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "enterPassiveIdleAnimState"); !value.empty()) {
+		if (auto value = node["enterPassiveIdleAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::EnterPassiveIdle)] = AnimationData(
 				utils::hash_id(value),
-				utils::xml_get_text_node<float>(node, "enterPassiveIdleAnimDuration")
+				node["enterPassiveIdleAnimDuration"].as<float>(0.0f)
 			);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "danceEmoteAnimState"); !value.empty()) {
+		if (auto value = node["danceEmoteAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Dance)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "tauntEmoteAnimState"); !value.empty()) {
+		if (auto value = node["tauntEmoteAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Taunt)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "meleeDeathAnimState"); !value.empty()) {
+		if (auto value = node["meleeDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::MeleeDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "meleeCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["meleeCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::MeleeCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "meleeCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["meleeCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::MeleeCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "cyberCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["cyberCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::CyberCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "cyberCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["cyberCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::CyberCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "plasmaCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["plasmaCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::PlasmaCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "plasmaCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["plasmaCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::PlasmaCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "bioCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["bioCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::BioCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "bioCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["bioCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::BioCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "necroCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["necroCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::NecroCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "necroCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["necroCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::NecroCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "spacetimeCritDeathAnimState"); !value.empty()) {
+		if (auto value = node["spacetimeCritDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::SpacetimeCriticalDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "spacetimeCritKnockbackDeathAnimState"); !value.empty()) {
+		if (auto value = node["spacetimeCritKnockbackDeathAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::SpacetimeCriticalKnockbackDeath)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "bodyFadeAnimState"); !value.empty()) {
+		if (auto value = node["bodyFadeAnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::BodyFade)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "randomAbility1AnimState"); !value.empty()) {
+		if (auto value = node["randomAbility1AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::RandomAbility1)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "randomAbility2AnimState"); !value.empty()) {
+		if (auto value = node["randomAbility2AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::RandomAbility2)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "randomAbility3AnimState"); !value.empty()) {
+		if (auto value = node["randomAbility3AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::RandomAbility3)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "overlay1AnimState"); !value.empty()) {
+		if (auto value = node["overlay1AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Overlay1)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "overlay2AnimState"); !value.empty()) {
+		if (auto value = node["overlay2AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Overlay2)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 
-		if (auto value = utils::xml_get_text_node(node, "overlay3AnimState"); !value.empty()) {
+		if (auto value = node["overlay3AnimState"].as<std::string>(""); !value.empty()) {
 			mAnimationData[std::to_underlying(CharacterAnimationType::Overlay3)] = AnimationData(utils::hash_id(value), 0.f);
 		}
 	}
@@ -713,76 +709,77 @@ namespace Game {
 	}
 
 	// Noun
-	void Noun::Read(pugi::xml_node node) {
+	void Noun::Read(const YAML::Node& node) {
 		const auto& database = NounDatabase::Instance();
-		if (node.child("nounType")) {
+		if (node["nounType"]) {
 			// Directly parsed from .Noun files
-			mType = utils::xml_get_text_node<NounType>(node, "nounType");
-			mPresetExtents = utils::xml_get_text_node<PresetExtents>(node, "presetExtents");
-			mMovementType = utils::xml_get_text_node<MovementType>(node, "locomotionType");
+			mType = static_cast<NounType>(node["nounType"].as<uint32_t>(0));
+			mPresetExtents = static_cast<PresetExtents>(node["presetExtents"].as<uint32_t>(0));
+			mMovementType = static_cast<MovementType>(node["locomotionType"].as<uint8_t>(0));
 
-			if (auto bboxNode = node.child("bbox")) {
+			if (node["bbox"]) {
+				const auto& bboxNode = node["bbox"];
 				mBoundingBox = BoundingBox(
-					ReadVec3(bboxNode.child("min")),
-					ReadVec3(bboxNode.child("max"))
+					ReadVec3(bboxNode["min"]),
+					ReadVec3(bboxNode["max"])
 				);
 			}
 
-			auto nonPlayerClassName = utils::xml_get_text_node(node, "npcClassData");
+			auto nonPlayerClassName = node["npcClassData"].as<std::string>("");
 			if (!nonPlayerClassName.empty()) {
 				mNpcClassData = database.GetNonPlayerClass(utils::hash_id(nonPlayerClassName));
 			}
 
-			auto playerClassName = utils::xml_get_text_node(node, "playerClassData");
+			auto playerClassName = node["playerClassData"].as<std::string>("");
 			if (!playerClassName.empty()) {
 				mPlayerClassData = database.GetPlayerClass(utils::hash_id(playerClassName));
 			}
 
-			auto aidefinitionName = utils::xml_get_text_node(node, "aiDefinition");
+			auto aidefinitionName = node["aiDefinition"].as<std::string>("");
 			if (!aidefinitionName.empty()) {
 				mAIDefinition = database.GetAIDefinition(utils::hash_id(aidefinitionName));
 			}
 
-			auto characterAnimationName = utils::xml_get_text_node(node, "characterAnimationData");
+			auto characterAnimationName = node["characterAnimationData"].as<std::string>("");
 			if (!characterAnimationName.empty()) {
 				mCharacterAnimation = database.GetCharacterAnimation(utils::hash_id(characterAnimationName));
 			}
 
-			mAssetId = utils::xml_get_text_node<uint64_t>(node, "assetId");
-			mTeam = utils::xml_get_text_node<uint8_t>(node, "spawnTeamId");
+			mAssetId = node["assetId"].as<uint64_t>(0);
+			mTeam = node["spawnTeamId"].as<uint8_t>(0);
 			ReadListNode(node, "eliteAssetIds", mEliteAssetIds);
 
-			if (auto doorNode = node.child("doorDef")) {
+			if (node["doorDef"]) {
 				mDoorData = std::make_unique<DoorData>();
-				mDoorData->Read(doorNode);
+				mDoorData->Read(node["doorDef"]);
 			}
 
-			if (auto switchNode = node.child("switchDef")) {
+			if (node["switchDef"]) {
 				mSwitchData = std::make_unique<SwitchData>();
-				mSwitchData->Read(switchNode);
+				mSwitchData->Read(node["switchDef"]);
 			}
 
-			if (auto pressureSwitchNode = node.child("pressureSwitchDef")) {
+			if (node["pressureSwitchDef"]) {
 				mPressureSwitchData = std::make_unique<PressureSwitchData>();
-				mPressureSwitchData->Read(pressureSwitchNode);
+				mPressureSwitchData->Read(node["pressureSwitchDef"]);
 			}
 
-			if (auto projectileNode = node.child("projectile")) {
+			if (node["projectile"]) {
 				mProjectileData = std::make_unique<ProjectileData>();
-				mProjectileData->Read(projectileNode);
+				mProjectileData->Read(node["projectile"]);
 			}
 
-			if (auto orbitNode = node.child("orbit")) {
+			if (node["orbit"]) {
 				mOrbitData = std::make_unique<OrbitData>();
-				mOrbitData->Read(orbitNode);
+				mOrbitData->Read(node["orbit"]);
 			}
 
-			mHasLocomotion = utils::xml_get_text_node<bool>(node, "hasLocomotion");
-			mIsFlora = utils::xml_get_text_node<bool>(node, "isFlora");
-			mIsMineral = utils::xml_get_text_node<bool>(node, "isMineral");
-			mIsCreature = utils::xml_get_text_node<bool>(node, "isCreature");
-			mIsPlayer = utils::xml_get_text_node<bool>(node, "isPlayer");
-			mIsSpawned = utils::xml_get_text_node<bool>(node, "isSpawned");
+			mHasLocomotion = node["hasLocomotion"].as<bool>(false);
+			mIsFlora = node["isFlora"].as<bool>(false);
+			mIsMineral = node["isMineral"].as<bool>(false);
+			mIsCreature = node["isCreature"].as<bool>(false);
+			mIsPlayer = node["isPlayer"].as<bool>(false);
+			mIsSpawned = node["isSpawned"].as<bool>(false);
 		} else {
 			// Shortened versions
 		}
@@ -1003,12 +1000,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
-					if (auto rootNode = document.child("noun")) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
+					if (document["noun"]) {
 						auto noun = std::make_shared<Noun>();
-						noun->Read(rootNode);
+						noun->Read(document["noun"]);
 
 						auto name = path.stem().string();
 						noun->mId = utils::hash_id(name);
@@ -1016,8 +1013,8 @@ namespace Game {
 
 						mNouns.try_emplace(noun->mId, noun);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1045,12 +1042,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<NonPlayerClass>();
-					if (auto rootNode = document.child("nonplayerclass")) {
-						data->Read(rootNode);
+					if (document["nonplayerclass"]) {
+						data->Read(document["nonplayerclass"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1058,8 +1055,8 @@ namespace Game {
 
 						mNonPlayerClasses.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1087,12 +1084,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<PlayerClass>();
-					if (auto rootNode = document.child("playerclass")) {
-						data->Read(rootNode);
+					if (document["playerclass"]) {
+						data->Read(document["playerclass"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1100,8 +1097,8 @@ namespace Game {
 
 						mPlayerClasses.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1129,12 +1126,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<NpcAffix>();
-					if (auto rootNode = document.child("npcaffix")) {
-						data->Read(rootNode);
+					if (document["npcaffix"]) {
+						data->Read(document["npcaffix"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1142,8 +1139,8 @@ namespace Game {
 
 						mNpcAffixes.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1175,12 +1172,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<ClassAttributes>();
-					if (auto rootNode = document.child("classattributes")) {
-						data->Read(rootNode);
+					if (document["classattributes"]) {
+						data->Read(document["classattributes"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1188,8 +1185,8 @@ namespace Game {
 
 						mClassAttributes.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1217,12 +1214,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<AIDefinition>();
-					if (auto rootNode = document.child("aidefinition")) {
-						data->Read(rootNode);
+					if (document["aidefinition"]) {
+						data->Read(document["aidefinition"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1230,8 +1227,8 @@ namespace Game {
 
 						mAIDefinitions.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1259,12 +1256,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<CharacterAnimation>();
-					if (auto rootNode = document.child("characteranimation")) {
-						data->Read(rootNode);
+					if (document["characteranimation"]) {
+						data->Read(document["characteranimation"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1272,8 +1269,8 @@ namespace Game {
 
 						mCharacterAnimations.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}
@@ -1301,12 +1298,12 @@ namespace Game {
 
 		for (const auto& entry : std::filesystem::directory_iterator(dataPath)) {
 			const auto& path = entry.path();
-			if (entry.is_regular_file() && path.extension() == ".xml") {
-				pugi::xml_document document;
-				if (auto parse_result = document.load_file(path.c_str())) {
+			if (entry.is_regular_file() && path.extension() == ".yaml") {
+				try {
+					YAML::Node document = YAML::LoadFile(path.string());
 					auto data = std::make_shared<Phase>();
-					if (auto rootNode = document.child("phase")) {
-						data->Read(rootNode);
+					if (document["phase"]) {
+						data->Read(document["phase"]);
 
 						auto name = path.stem().string();
 						data->mId = utils::hash_id(name);
@@ -1314,8 +1311,8 @@ namespace Game {
 
 						mPhases.try_emplace(data->mId, data);
 					}
-				} else {
-					std::cout << "NounDatabase: Could not load '" << path << "'." << std::endl;
+				} catch (const YAML::Exception& e) {
+					std::cout << "NounDatabase: Could not load '" << path << "': " << e.what() << std::endl;
 					failed++;
 				}
 			}

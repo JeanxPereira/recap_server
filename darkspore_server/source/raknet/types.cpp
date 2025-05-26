@@ -690,7 +690,7 @@ namespace RakNet {
 		mAllowedStopDistance = distance;
 		mDesiredStopDistance = distance;
 	}
-	/*
+	
 	void LocomotionData::SetGoalObject(const Game::ObjectPtr& object, float distance) {
 		if (!object) {
 			return;
@@ -726,7 +726,7 @@ namespace RakNet {
 		mAllowedStopDistance = distance;
 		mDesiredStopDistance = distance;
 	}
-	*/
+	
 	void LocomotionData::Stop() {
 		constexpr auto vec3_zero = glm::zero<glm::vec3>();
 
@@ -737,7 +737,7 @@ namespace RakNet {
 		// set data
 		mGoalFlags = 0x020;
 	}
-	/*
+	
 	void LocomotionData::MoveToPointWhileFacingTarget(const glm::vec3& position, const Game::ObjectPtr& object) {
 		constexpr auto vec3_zero = glm::zero<glm::vec3>();
 		if (!object) {
@@ -758,7 +758,7 @@ namespace RakNet {
 
 		// extra_func(0x100);
 	}
-	*/
+	
 	void LocomotionData::ApplyExternalVelocity(const glm::vec3& velocity) {
 		constexpr auto vec3_zero = glm::zero<glm::vec3>();
 

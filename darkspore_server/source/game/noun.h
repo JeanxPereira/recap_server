@@ -1,4 +1,3 @@
-
 #ifndef _GAME_NOUN_HEADER
 #define _GAME_NOUN_HEADER
 
@@ -6,6 +5,7 @@
 #include "collision.h"
 #include "utils/functions.h"
 
+#include <yaml-cpp/yaml.h>
 #include <array>
 #include <memory>
 #include <map>
@@ -25,7 +25,7 @@ namespace Game {
 	// DoorData
 	class DoorData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 		private:
 			DoorState mInitialState { DoorState::Open };
@@ -37,13 +37,13 @@ namespace Game {
 	// SwitchData
 	class SwitchData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 	};
 
 	// PressureSwitchData
 	class PressureSwitchData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 		private:
 			BoundingShape mShape {};
@@ -58,7 +58,7 @@ namespace Game {
 	// CollisionVolume
 	class CollisionVolume {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const glm::vec3& GetBoxExtents() const;
 			float GetSphereRadius() const;
@@ -83,7 +83,7 @@ namespace Game {
 	// ProjectileData
 	class ProjectileData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::unique_ptr<CollisionVolume>& GetCreatureCollisionVolume() const;
 			const std::unique_ptr<CollisionVolume>& GetOtherCollisionVolume() const;
@@ -99,7 +99,7 @@ namespace Game {
 	// OrbitData
 	class OrbitData {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			float GetHeight() const;
 			float GetRadius() const;
@@ -136,7 +136,7 @@ namespace Game {
 	// ClassAttributes
 	class ClassAttributes {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			float GetBaseAttribute(ClassAttribute::Key key) const;
 			float GetMaxAttribute(ClassAttribute::Key key) const;
@@ -186,7 +186,7 @@ namespace Game {
 	// NpcAffix
 	class NpcAffix {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::shared_ptr<NpcAffix>& GetChild() const;
 			const std::shared_ptr<NpcAffix>& GetParent() const;
@@ -208,7 +208,7 @@ namespace Game {
 	// EliteAffix
 	class EliteAffix {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 		private:
 			std::shared_ptr<NpcAffix> mNpcAffix;
@@ -237,7 +237,7 @@ namespace Game {
 	// PlayerClass
 	class PlayerClass {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::shared_ptr<ClassAttributes>& GetAttributes() const;
 
@@ -280,7 +280,7 @@ namespace Game {
 	// NonPlayerClass
 	class NonPlayerClass {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 			
 			const std::shared_ptr<ClassAttributes>& GetAttributes() const;
 
@@ -333,7 +333,7 @@ namespace Game {
 	// AssetProperty
 	class AssetProperty {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 		private:
 			std::string mName;
@@ -346,7 +346,7 @@ namespace Game {
 	// GambitDefinition
 	class GambitDefinition {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::vector<AssetProperty>& GetConditionProperties() const;
 			const std::vector<AssetProperty>& GetAbilityProperties() const;
@@ -374,7 +374,7 @@ namespace Game {
 	// Phase
 	class Phase {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::vector<GambitDefinition>& GetGambit() const;
 
@@ -407,7 +407,7 @@ namespace Game {
 	// AINode
 	class AINode {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::shared_ptr<Phase>& GetPhaseData() const;
 			const std::shared_ptr<Condition>& GetConditionData() const;
@@ -425,7 +425,7 @@ namespace Game {
 	// AIDefinition
 	class AIDefinition {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			const std::vector<AINode>& GetNodes() const;
 
@@ -522,7 +522,7 @@ namespace Game {
 	// CharacterAnimation
 	class CharacterAnimation {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			AnimationData GetAnimationData(CharacterAnimationType type) const;
 
@@ -622,7 +622,7 @@ namespace Game {
 	// Noun
 	class Noun {
 		public:
-			void Read(pugi::xml_node node);
+			void Read(const YAML::Node& node);
 
 			static std::tuple<glm::vec3, float> GetExtents(PresetExtents preset);
 

@@ -45,6 +45,10 @@ target_link_libraries(recap_server PRIVATE boost_regex boost_asio boost_beast bo
 CPMAddPackage("gh:zeux/pugixml@1.15")
 target_link_libraries(recap_server PRIVATE pugixml)
 
+# yaml-cpp
+CPMAddPackage("gh:jbeder/yaml-cpp@0.8.0")
+target_link_libraries(recap_server PRIVATE yaml-cpp)
+
 # RapidJSON
 CPMAddPackage(NAME rapidjson
     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
