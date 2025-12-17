@@ -72,6 +72,10 @@ target_link_libraries(recap_server PRIVATE boost_regex boost_asio boost_beast bo
 CPMAddPackage("gh:zeux/pugixml@1.15")
 target_link_libraries(recap_server PRIVATE pugixml)
 
+# fmt
+CPMAddPackage("gh:fmtlib/fmt@12.1.0")
+target_link_libraries(recap_server PRIVATE fmt::fmt)
+
 # RapidJSON
 CPMAddPackage(NAME rapidjson
     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
@@ -210,5 +214,5 @@ elseif(APPLE)
 endif()
 
 if(MSVC)
-    target_compile_options(recap_server PRIVATE /utf-8 /bigobj>)
+    target_compile_options(recap_server PRIVATE /utf-8 /bigobj)
 endif()
