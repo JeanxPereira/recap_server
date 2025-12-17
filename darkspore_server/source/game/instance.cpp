@@ -1,17 +1,17 @@
 
 // Include
-#include "instance.h"
+#include "Instance.h"
 
-#include "objectmanager.h"
-#include "lua.h"
-#include "serverevent.h"
-#include "catalyst.h"
-#include "scheduler.h"
+#include "ObjectManager.h"
+#include "Lua.h"
+#include "ServerEvent.h"
+#include "Catalyst.h"
+#include "Core/Async/Scheduler.h"
 
-#include "raknet/server.h"
-#include "sporenet/instance.h"
-#include "sporenet/user.h"
-#include "utils/functions.h"
+#include "RakNet/Server.h"
+#include "SporeNet/Instance.h"
+#include "SporeNet/user.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 #include <array>

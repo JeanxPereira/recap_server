@@ -1,7 +1,7 @@
 
 // Include
-#include "types.h"
-#include "utils/functions.h"
+#include "Types.h"
+#include "Core/Utils/Functions.h"
 
 #include <numbers>
 

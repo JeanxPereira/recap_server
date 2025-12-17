@@ -3,9 +3,9 @@
 #define _GAME_PLAYER_HEADER
 
 // Include
-#include "predefined.h"
-#include "character.h"
-#include "catalyst.h"
+#include "Core/Base/Predefined.h"
+#include "Character.h"
+#include "Catalyst.h"
 
 // Game
 namespace Game {

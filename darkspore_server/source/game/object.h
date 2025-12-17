@@ -3,10 +3,10 @@
 #define _GAME_OBJECT_HEADER
 
 // Include
-#include "noun.h"
-#include "attributes.h"
-#include "locomotion.h"
-#include "lua.h"
+#include "Noun.h"
+#include "Attributes.h"
+#include "Locomotion.h"
+#include "Lua.h"
 
 #include <map>
 #include <tuple>

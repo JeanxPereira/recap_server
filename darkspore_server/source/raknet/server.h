@@ -5,13 +5,13 @@
 // #define PACKET_LOGGING
 
 // Include
-#include "predefined.h"
-#include "types.h"
-#include "client.h"
+#include "Core/Base/Predefined.h"
+#include "Types.h"
+#include "Client.h"
 
-#include "game/catalyst.h"
+#include "Game/Catalyst.h"
 
-#include "blaze/types.h"
+#include "Blaze/Types.h"
 
 #ifdef PACKET_LOGGING
 #	include <PacketLogger.h>

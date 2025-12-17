@@ -1,8 +1,8 @@
 
 // Include
-#include "attributes.h"
+#include "Attributes.h"
 
-#include "raknet/server.h"
+#include "RakNet/Server.h"
 
 #include <algorithm>
 

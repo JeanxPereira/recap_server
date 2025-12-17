@@ -1,17 +1,17 @@
 
 // Include
-#include "server.h"
+#include "Server.h"
 
-#include "sporenet/instance.h"
-#include "sporenet/user.h"
-#include "sporenet/creature.h"
+#include "SporeNet/Instance.h"
+#include "SporeNet/User.h"
+#include "SporeNet/Creature.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
-#include "game/instance.h"
-#include "game/objectmanager.h"
-#include "game/serverevent.h"
-#include "game/catalyst.h"
+#include "Game/instance.h"
+#include "Game/ObjectManager.h"
+#include "Game/Serverevent.h"
+#include "Game/Catalyst.h"
 
 #include <glm/gtx/euler_angles.hpp>
 

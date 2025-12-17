@@ -3,10 +3,10 @@
 #define _GAME_OBJECT_MANAGER_HEADER
 
 // Include
-#include "object.h"
-#include "octree.h"
-#include "lua.h"
-#include "level.h"
+#include "Object.h"
+#include "Octree.h"
+#include "Lua.h"
+#include "Level.h"
 
 #include <unordered_map>
 #include <unordered_set>

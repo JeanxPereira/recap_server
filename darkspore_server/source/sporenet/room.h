@@ -3,8 +3,8 @@
 #define _SPORENET_ROOM_HEADER
 
 // Include
-#include "predefined.h"
-#include "blaze/types.h"
+#include "Core/Base/Predefined.h"
+#include "Blaze/Types.h"
 #include <map>
 
 // Blaze::TDF

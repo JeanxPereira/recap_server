@@ -1,19 +1,19 @@
 
 // Include
-#include "utilcomponent.h"
-#include "associationcomponent.h"
-#include "authcomponent.h"
-#include "gamemanagercomponent.h"
-#include "messagingcomponent.h"
-#include "playgroupscomponent.h"
-#include "redirectorcomponent.h"
-#include "roomscomponent.h"
-#include "usersessioncomponent.h"
+#include "UtilComponent.h"
+#include "AssociationComponent.h"
+#include "AuthComponent.h"
+#include "GameManagerComponent.h"
+#include "MessagingComponent.h"
+#include "PlaygroupsComponent.h"
+#include "RedirectorComponent.h"
+#include "RoomsComponent.h"
+#include "UserSessionComponent.h"
 
-#include "main.h"
+#include "Main.h"
 
-#include "blaze/client.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 

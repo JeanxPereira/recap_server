@@ -3,12 +3,12 @@
 #define _MAIN_HEADER
 
 // Include
-#include "predefined.h"
+#include "Core/Base/Predefined.h"
 
-#include "blaze/server.h"
-#include "http/server.h"
-#include "qos/server.h"
-#include "game/api.h"
+#include "Blaze/Server.h"
+#include "HTTP/server.h"
+#include "QoS/server.h"
+#include "Game/API.h"
 
 #include <filesystem>
 

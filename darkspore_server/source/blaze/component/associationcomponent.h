@@ -3,8 +3,8 @@
 #define _BLAZE_COMPONENT_ASSOCIATION_HEADER
 
 // Include
-#include "blaze/component.h"
-#include "blaze/functions.h"
+#include "Blaze/Component.h"
+#include "Blaze/Functions.h"
 
 // Blaze
 namespace Blaze {

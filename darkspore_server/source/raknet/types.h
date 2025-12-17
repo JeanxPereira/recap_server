@@ -3,7 +3,7 @@
 #define _RAKNET_TYPES_HEADER
 
 // Include
-#include "blaze/types.h"
+#include "Blaze/Types.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>

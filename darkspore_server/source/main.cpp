@@ -1,24 +1,24 @@
 
 // Include
-#include "main.h"
-#include "scheduler.h"
-#include "version.h"
+#include "Main.h"
+#include "Core/Async/Scheduler.h"
+#include "Core/Base/Version.h"
 
-#include "sporenet/instance.h"
+#include "SporeNet/instance.h"
 
-#include "http/uri.h"
+#include "HTTP/uri.h"
 
-#include "game/config.h"
-#include "game/noun.h"
-#include "game/lua.h"
+#include "Game/config.h"
+#include "Game/noun.h"
+#include "Game/lua.h"
 
-#include "game/AssetData/DBPFManager.h"
-#include "game/AssetData/AssetData.h"
-#include "game/AssetData/AssetData.h"
+#include "Game/AssetData/DBPFManager.h"
+#include "Game/AssetData/AssetData.h"
+#include "Game/AssetData/AssetData.h"
 
-#include "utils/net.h"
+#include "Core/Utils/Net.h"
 
-#include "installer.h"
+#include "Installer.h"
 
 #include <iostream>
 #include <cstring>

@@ -1,8 +1,8 @@
 
 // Include
-#include "part.h"
+#include "Part.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <map>
 

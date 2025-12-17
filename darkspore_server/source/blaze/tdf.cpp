@@ -1,7 +1,7 @@
 ﻿
 // Include
-#include "tdf.h"
-#include "types.h"
+#include "TDF.h"
+#include "Types.h"
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>

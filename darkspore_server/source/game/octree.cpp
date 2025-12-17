@@ -1,9 +1,9 @@
 
 // Include
-#include "octree.h"
-#include "objectmanager.h"
+#include "Octree.h"
+#include "ObjectManager.h"
 
-#include "utils/log.h"
+#include "Core/Utils/Log.h"
 
 // TODO: just change this octree to focus on triggers
 

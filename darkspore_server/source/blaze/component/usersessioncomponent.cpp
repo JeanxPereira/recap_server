@@ -1,10 +1,10 @@
 
 // Include
-#include "usersessioncomponent.h"
-#include "gamemanagercomponent.h"
+#include "UserSessionComponent.h"
+#include "GameManagerComponent.h"
 
-#include "blaze/client.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 

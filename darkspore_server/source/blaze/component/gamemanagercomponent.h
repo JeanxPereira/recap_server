@@ -3,8 +3,8 @@
 #define _BLAZE_COMPONENT_GAMEMANAGER_HEADER
 
 // Include
-#include "predefined.h"
-#include "blaze/component.h"
+#include "Core/Base/Predefined.h"
+#include "Blaze/Component.h"
 
 // Blaze
 namespace Blaze {

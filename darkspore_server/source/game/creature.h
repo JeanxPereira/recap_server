@@ -3,7 +3,7 @@
 #define _GAME_CREATURE_HEADER
 
 // Include
-#include "object.h"
+#include "Object.h"
 
 // Game
 namespace Game {

@@ -3,7 +3,7 @@
 #define _GAME_GAME_MANAGER_HEADER
 
 // Include
-#include "instance.h"
+#include "Instance.h"
 
 #include <cstdint>
 #include <string>

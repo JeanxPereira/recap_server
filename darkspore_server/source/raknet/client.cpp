@@ -1,11 +1,11 @@
 
 // Include
-#include "client.h"
-#include "server.h"
+#include "Client.h"
+#include "Server.h"
 
-#include "game/instance.h"
+#include "Game/Instance.h"
 
-#include "sporenet/user.h"
+#include "SporeNet/User.h"
 
 #include <iostream>
 

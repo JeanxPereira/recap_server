@@ -1,10 +1,10 @@
 
 // Include
-#include "router.h"
-#include "session.h"
-#include "uri.h"
+#include "Router.h"
+#include "Session.h"
+#include "URI.h"
 
-#include "../utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>

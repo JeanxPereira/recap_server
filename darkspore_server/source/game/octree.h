@@ -3,8 +3,8 @@
 #define _GAME_OCTREE_HEADER
 
 // Include
-#include "predefined.h"
-#include "noun.h"
+#include "Core/Base/Predefined.h"
+#include "Noun.h"
 
 // Game
 namespace Game {

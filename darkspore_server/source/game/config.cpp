@@ -1,7 +1,7 @@
 
 // Include
-#include "config.h"
-#include "version.h"
+#include "Config.h"
+#include "Core/Base/Version.h"
 
 #include <pugixml.hpp>
 

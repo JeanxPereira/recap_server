@@ -3,15 +3,15 @@
 #define _SPORENET_USER_HEADER
 
 // Include
-#include "predefined.h"
+#include "Core/Base/Predefined.h"
 
-#include "part.h"
-#include "squad.h"
-#include "room.h"
+#include "Part.h"
+#include "Squad.h"
+#include "Room.h"
 
-#include "game/instance.h"
+#include "Game/Instance.h"
 
-#include "blaze/functions.h"
+#include "Blaze/Functions.h"
 
 #include <cstdint>
 #include <string>

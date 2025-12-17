@@ -3,12 +3,12 @@
 #define _BLAZE_CLIENT_HEADER
 
 // Include
-#include "types.h"
-#include "functions.h"
+#include "Types.h"
+#include "Functions.h"
 
 #include "network/client.h"
 
-#include "sporenet/user.h"
+#include "SporeNet/user.h"
 
 #include <boost/asio/ssl.hpp>
 

@@ -3,7 +3,7 @@
 #define _GAME_LOCOMOTION_HEADER
 
 // Include
-#include "predefined.h"
+#include "Core/Base/Predefined.h"
 
 #include <glm/glm.hpp>
 

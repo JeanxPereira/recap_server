@@ -1,11 +1,11 @@
 
 // Include
-#include "catalyst.h"
-#include "object.h"
+#include "Catalyst.h"
+#include "Object.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
-#include "raknet/types.h"
+#include "RakNet/types.h"
 
 // Game
 namespace Game {

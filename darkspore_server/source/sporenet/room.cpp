@@ -1,9 +1,9 @@
 
 // Include
-#include "room.h"
-#include "user.h"
+#include "Room.h"
+#include "User.h"
 
-#include "blaze/tdf.h"
+#include "Blaze/TDF.h"
 
 /*
 RoomViewData

@@ -1,16 +1,16 @@
 
 // Include
-#include "component.h"
+#include "Component.h"
 
-#include "component/associationcomponent.h"
-#include "component/authcomponent.h"
-#include "component/gamemanagercomponent.h"
-#include "component/messagingcomponent.h"
-#include "component/playgroupscomponent.h"
-#include "component/redirectorcomponent.h"
-#include "component/roomscomponent.h"
-#include "component/usersessioncomponent.h"
-#include "component/utilcomponent.h"
+#include "Component/AssociationComponent.h"
+#include "Component/AuthComponent.h"
+#include "Component/GameManagerComponent.h"
+#include "Component/MessagingComponent.h"
+#include "Component/PlaygroupsComponent.h"
+#include "Component/RedirectorComponent.h"
+#include "Component/RoomsComponent.h"
+#include "Component/UserSessionComponent.h"
+#include "Component/UtilComponent.h"
 
 // unused components
 enum ComponentType : uint16_t {

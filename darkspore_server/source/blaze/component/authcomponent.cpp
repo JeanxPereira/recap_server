@@ -1,14 +1,14 @@
 
 // Include
-#include "authcomponent.h"
-#include "usersessioncomponent.h"
+#include "AuthComponent.h"
+#include "UserSessionComponent.h"
 
-#include "sporenet/instance.h"
-#include "sporenet/user.h"
+#include "SporeNet/instance.h"
+#include "SporeNet/user.h"
 
-#include "blaze/client.h"
-#include "blaze/functions.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Blaze/Functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 

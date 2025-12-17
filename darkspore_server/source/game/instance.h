@@ -3,15 +3,15 @@
 #define _GAME_INSTANCE_HEADER
 
 // Include
-#include "predefined.h"
+#include "Core/Base/Predefined.h"
 
-#include "blaze/types.h"
-#include "blaze/functions.h"
+#include "Blaze/Types.h"
+#include "Blaze/Functions.h"
 
-#include "raknet/types.h"
+#include "RakNet/Types.h"
 
-#include "player.h"
-#include "level.h"
+#include "Player.h"
+#include "Level.h"
 
 #include <cstdint>
 #include <string>

@@ -1,14 +1,14 @@
 
 // Include
-#include "object.h"
-#include "objectmanager.h"
-#include "instance.h"
-#include "catalyst.h"
+#include "Object.h"
+#include "ObjectManager.h"
+#include "Instance.h"
+#include "Catalyst.h"
 
-#include "sporenet/part.h"
+#include "SporeNet/part.h"
 
-#include "utils/functions.h"
-#include "utils/log.h"
+#include "Core/Utils/Functions.h"
+#include "Core/Utils/Log.h"
 
 // magic numbers
 constexpr std::array<float, 19> magicNumbers {

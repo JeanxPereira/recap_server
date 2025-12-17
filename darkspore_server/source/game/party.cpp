@@ -1,6 +1,6 @@
 
 // Include
-#include "party.h"
+#include "Party.h"
 
 // Game
 namespace Game {

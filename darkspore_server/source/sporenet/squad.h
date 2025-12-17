@@ -3,7 +3,7 @@
 #define _SPORENET_SQUAD_HEADER
 
 // Include
-#include "creature.h"
+#include "Creature.h"
 
 // SporeNet
 namespace SporeNet {

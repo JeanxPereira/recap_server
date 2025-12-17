@@ -1,15 +1,15 @@
 
 // Include
-#include "player.h"
+#include "Player.h"
 
-#include "instance.h"
-#include "objectmanager.h"
+#include "Instance.h"
+#include "ObjectManager.h"
 
-#include "sporenet/user.h"
+#include "SporeNet/User.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
-#include "raknet/types.h"
+#include "RakNet/types.h"
 
 // Game
 namespace Game {

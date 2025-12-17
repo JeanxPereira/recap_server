@@ -1,13 +1,13 @@
 
 // Include
-#include "lua.h"
+#include "Lua.h"
 
-#include "instance.h"
-#include "objectmanager.h"
-#include "serverevent.h"
+#include "Instance.h"
+#include "ObjectManager.h"
+#include "ServerEvent.h"
 
-#include "utils/functions.h"
-#include "utils/log.h"
+#include "Core/Utils/Functions.h"
+#include "Core/Utils/Log.h"
 
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/compatibility.hpp>

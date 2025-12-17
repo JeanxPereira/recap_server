@@ -1,12 +1,12 @@
 
 // Include
-#include "roomscomponent.h"
+#include "RoomsComponent.h"
 
-#include "sporenet/instance.h"
-#include "sporenet/room.h"
+#include "SporeNet/instance.h"
+#include "SporeNet/room.h"
 
-#include "blaze/client.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 

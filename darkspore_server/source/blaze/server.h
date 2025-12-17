@@ -3,7 +3,7 @@
 #define _BLAZE_SERVER_HEADER
 
 // Include
-#include "client.h"
+#include "Client.h"
 
 // Blaze
 namespace Blaze {

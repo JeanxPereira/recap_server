@@ -3,7 +3,7 @@
 #define _GAME_LUA_HEADER
 
 // Include
-#include "attributes.h"
+#include "Attributes.h"
 
 #include <glm/glm.hpp>
 

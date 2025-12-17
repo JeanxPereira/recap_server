@@ -1,13 +1,13 @@
 
 // Include
-#include "serverevent.h"
-#include "object.h"
+#include "ServerEvent.h"
+#include "Object.h"
 
-#include "sporenet/part.h"
+#include "SporeNet/Part.h"
 
-#include "raknet/types.h"
+#include "RakNet/Types.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 // Game
 namespace Game {

@@ -3,8 +3,8 @@
 #define _RAKNET_CLIENT_HEADER
 
 // Include
-#include "predefined.h"
-#include "types.h"
+#include "Core/Base/Predefined.h"
+#include "Types.h"
 
 #include <RakPeerInterface.h>
 #include <memory>

@@ -3,7 +3,7 @@
 #define _GAME_PARTY_HEADER
 
 // Include
-#include "blaze/types.h"
+#include "Blaze/Types.h"
 
 #include <cstdint>
 #include <string>

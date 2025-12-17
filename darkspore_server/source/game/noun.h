@@ -3,8 +3,8 @@
 #define _GAME_NOUN_HEADER
 
 // Include
-#include "collision.h"
-#include "utils/functions.h"
+#include "Collision.h"
+#include "Core/Utils/Functions.h"
 
 #include <array>
 #include <memory>

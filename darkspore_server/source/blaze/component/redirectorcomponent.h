@@ -3,7 +3,7 @@
 #define _BLAZE_COMPONENT_REDIRECTOR_HEADER
 
 // Include
-#include "blaze/component.h"
+#include "Blaze/Component.h"
 
 // Blaze
 namespace Blaze {

@@ -3,8 +3,8 @@
 #define _HTTP_SERVER_HEADER
 
 // Include
-#include "session.h"
-#include "router.h"
+#include "Session.h"
+#include "Router.h"
 
 // HTTP
 namespace HTTP {

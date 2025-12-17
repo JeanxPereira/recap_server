@@ -1,6 +1,6 @@
 
 // Include
-#include "collision.h"
+#include "Collision.h"
 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/norm.hpp>

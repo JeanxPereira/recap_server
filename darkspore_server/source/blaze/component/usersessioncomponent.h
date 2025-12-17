@@ -3,10 +3,10 @@
 #define _BLAZE_COMPONENT_USERSESSION_HEADER
 
 // Include
-#include "predefined.h"
+#include "Core/Base/Predefined.h"
 
-#include "blaze/component.h"
-#include "blaze/functions.h"
+#include "Blaze/Component.h"
+#include "Blaze/Functions.h"
 
 // Blaze
 namespace Blaze {

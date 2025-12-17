@@ -3,7 +3,7 @@
 #define _GAME_CHARACTER_HEADER
 
 // Include
-#include "attributes.h"
+#include "Attributes.h"
 
 #include <array>
 

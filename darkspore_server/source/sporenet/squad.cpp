@@ -1,7 +1,7 @@
 
 // Include
-#include "squad.h"
-#include "utils/functions.h"
+#include "Squad.h"
+#include "Core/Utils/Functions.h"
 #include <algorithm>
 
 // SporeNet

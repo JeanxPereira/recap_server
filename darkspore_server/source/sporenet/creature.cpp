@@ -1,12 +1,12 @@
 
 // Include
-#include "creature.h"
-#include "instance.h"
+#include "Creature.h"
+#include "Instance.h"
 
 #include <initializer_list>
-#include "game/config.h"
-#include "utils/functions.h"
-#include "utils/json.h"
+#include "Game/Config.h"
+#include "Core/Utils/Functions.h"
+#include "Core/Utils/JSON.h"
 
 #include <algorithm>
 #include <filesystem>

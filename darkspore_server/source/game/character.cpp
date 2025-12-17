@@ -1,8 +1,8 @@
 
 // Include
-#include "character.h"
+#include "Character.h"
 
-#include "raknet/types.h"
+#include "RakNet/Types.h"
 
 // Game
 namespace Game {

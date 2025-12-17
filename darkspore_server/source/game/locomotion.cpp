@@ -1,9 +1,9 @@
 
 // Include
-#include "locomotion.h"
-#include "object.h"
+#include "Locomotion.h"
+#include "Object.h"
 
-#include "raknet/types.h"
+#include "RakNet/Types.h"
 
 #include <algorithm>
 

@@ -1,7 +1,7 @@
 
 // Include
-#include "functions.h"
-#include "utils/functions.h"
+#include "Functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <array>
 

@@ -3,7 +3,7 @@
 #define _BLAZE_FUNCTIONS_HEADER
 
 // Include
-#include "tdf.h"
+#include "TDF.h"
 #include <string>
 #include <map>
 

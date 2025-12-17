@@ -3,8 +3,8 @@
 #define _BLAZE_TDF_HEADER
 
 // Include
-#include "databuffer.h"
-#include "types.h"
+#include "Core/IO/DataBuffer.h"
+#include "Types.h"
 
 #include <rapidjson/document.h>
 #include <memory>

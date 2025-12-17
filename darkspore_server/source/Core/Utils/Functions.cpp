@@ -1,6 +1,6 @@
 
 // Include
-#include "functions.h"
+#include "Functions.h"
 #include <chrono>
 #include <ctime>
 #include <filesystem>

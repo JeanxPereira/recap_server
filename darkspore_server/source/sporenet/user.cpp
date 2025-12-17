@@ -1,11 +1,11 @@
 
 // Include
-#include "user.h"
-#include "instance.h"
+#include "User.h"
+#include "Instance.h"
 
-#include "game/config.h"
-#include "blaze/component/associationcomponent.h"
-#include "utils/functions.h"
+#include "Game/Config.h"
+#include "Blaze/Component/AssociationComponent.h"
+#include "Core/Utils/Functions.h"
 
 #include <algorithm>
 #include <array>

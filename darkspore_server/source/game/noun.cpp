@@ -1,10 +1,10 @@
 
 // Include
-#include "noun.h"
-#include "config.h"
+#include "Noun.h"
+#include "Config.h"
 
-#include "utils/functions.h"
-#include "utils/log.h"
+#include "Core/Utils/Functions.h"
+#include "Core/Utils/Log.h"
 
 #include <filesystem>
 

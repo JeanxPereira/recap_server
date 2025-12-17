@@ -3,8 +3,8 @@
 #define _SPORENET_VENDOR_HEADER
 
 // Include
-#include "predefined.h"
-#include "part.h"
+#include "Core/Base/Predefined.h"
+#include "Part.h"
 
 #include <map>
 #include <unordered_map>

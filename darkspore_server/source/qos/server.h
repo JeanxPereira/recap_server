@@ -3,7 +3,7 @@
 #define _QOS_SERVER_HEADER
 
 // Include
-#include "network/client.h"
+#include "Network/Client.h"
 
 // QoS
 namespace QoS {

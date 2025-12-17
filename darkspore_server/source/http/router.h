@@ -3,7 +3,7 @@
 #define _HTTP_ROUTER_HEADER
 
 // Include
-#include "uri.h"
+#include "URI.h"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>

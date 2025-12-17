@@ -1,6 +1,6 @@
 
 // Include
-#include "server.h"
+#include "Server.h"
 
 #include <boost/bind/bind.hpp>
 #include <iostream>

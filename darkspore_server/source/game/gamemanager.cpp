@@ -1,7 +1,7 @@
 
 // Include
-#include "gamemanager.h"
-#include "raknet/server.h"
+#include "GameManager.h"
+#include "RakNet/Server.h"
 
 // Game
 namespace Game {

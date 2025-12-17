@@ -1,11 +1,11 @@
 
 // Include
-#include "client.h"
-#include "component.h"
+#include "Client.h"
+#include "Component.h"
 
-#include "component/usersessioncomponent.h"
+#include "Component/UserSessionComponent.h"
 
-#include "utils/log.h"
+#include "Core/Utils/Log.h"
 
 #include <boost/bind/bind.hpp>
 #include <iostream>

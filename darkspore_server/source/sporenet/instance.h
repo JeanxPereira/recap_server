@@ -3,8 +3,8 @@
 #define _SPORENET_INSTANCE_HEADER
 
 // Include
-#include "predefined.h"
-#include "main.h"
+#include "Core/Base/Predefined.h"
+#include "Main.h"
 
 // SporeNet
 namespace SporeNet {

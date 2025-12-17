@@ -3,8 +3,8 @@
 #define _BLAZE_COMPONENT_AUTH_HEADER
 
 // Include
-#include "blaze/component.h"
-#include "predefined.h"
+#include "Blaze/Component.h"
+#include "Core/Base/Predefined.h"
 
 // Blaze
 namespace Blaze {

@@ -1,10 +1,10 @@
 
 // Include
-#include "instance.h"
-#include "creature.h"
-#include "user.h"
-#include "room.h"
-#include "vendor.h"
+#include "Instance.h"
+#include "Creature.h"
+#include "User.h"
+#include "Room.h"
+#include "Vendor.h"
 
 // SporeNet
 namespace SporeNet {

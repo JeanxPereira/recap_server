@@ -1,9 +1,9 @@
 
 // Include
-#include "multipart.h"
-#include "session.h"
+#include "Multipart.h"
+#include "Session.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 // HTTP
 namespace HTTP {

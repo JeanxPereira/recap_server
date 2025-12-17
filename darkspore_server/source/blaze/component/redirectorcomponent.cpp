@@ -1,10 +1,10 @@
 
 // Include
-#include "redirectorcomponent.h"
+#include "RedirectorComponent.h"
 
-#include "main.h"
-#include "blaze/client.h"
-#include "game/config.h"
+#include "Main.h"
+#include "Blaze/Client.h"
+#include "Game/config.h"
 
 #include <iostream>
 

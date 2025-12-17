@@ -1,9 +1,9 @@
 
 // Include
-#include "session.h"
-#include "server.h"
+#include "Session.h"
+#include "Server.h"
 
-#include "../game/config.h"
+#include "../Game/Config.h"
 
 #include <boost/beast/version.hpp>
 

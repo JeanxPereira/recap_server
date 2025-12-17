@@ -1,20 +1,20 @@
 
 // Include
-#include "messagingcomponent.h"
-#include "gamemanagercomponent.h"
-#include "usersessioncomponent.h"
+#include "MessagingComponent.h"
+#include "GameManagerComponent.h"
+#include "UserSessionComponent.h"
 
-#include "sporenet/instance.h"
-#include "sporenet/user.h"
+#include "SporeNet/instance.h"
+#include "SporeNet/user.h"
 
-#include "game/gamemanager.h"
-#include "game/lua.h"
+#include "Game/gamemanager.h"
+#include "Game/lua.h"
 
-#include "raknet/server.h"
+#include "RakNet/server.h"
 
-#include "blaze/client.h"
-#include "blaze/functions.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Blaze/Functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 

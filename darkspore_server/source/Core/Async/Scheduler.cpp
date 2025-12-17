@@ -1,6 +1,6 @@
 
 // Include
-#include "scheduler.h"
+#include "Scheduler.h"
 
 // Scheduler
 Scheduler::Scheduler() {

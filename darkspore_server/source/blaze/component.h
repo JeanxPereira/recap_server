@@ -3,7 +3,7 @@
 #define _BLAZE_COMPONENT_HEADER
 
 // Include
-#include "blaze/functions.h"
+#include "Blaze/Functions.h"
 #include <string_view>
 
 // Blaze

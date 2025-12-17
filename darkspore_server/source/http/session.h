@@ -3,8 +3,8 @@
 #define _HTTP_SESSION_HEADER
 
 // Include
-#include "uri.h"
-#include "sporenet/user.h"
+#include "URI.h"
+#include "SporeNet/User.h"
 
 #include <boost/asio.hpp>
 

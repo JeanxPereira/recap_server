@@ -1,8 +1,8 @@
 
 // Include
-#include "vendor.h"
+#include "Vendor.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 // SporeNet
 namespace SporeNet {

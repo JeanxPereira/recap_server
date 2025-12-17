@@ -1,7 +1,7 @@
 
 // Include
-#include "log.h"
-#include "functions.h"
+#include "Log.h"
+#include "Functions.h"
 
 #ifdef _WIN32
     #include <io.h>

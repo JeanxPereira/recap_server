@@ -1,22 +1,22 @@
 
 // Include
-#include "api.h"
+#include "API.h"
 #include "config.h"
 
-#include "http/session.h"
-#include "http/router.h"
-#include "http/uri.h"
-#include "http/multipart.h"
+#include "HTTP/Session.h"
+#include "HTTP/Router.h"
+#include "HTTP/URI.h"
+#include "HTTP/Multipart.h"
 
-#include "sporenet/instance.h"
-#include "sporenet/user.h"
-#include "sporenet/creature.h"
-#include "sporenet/vendor.h"
+#include "SporeNet/Instance.h"
+#include "SporeNet/User.h"
+#include "SporeNet/Creature.h"
+#include "SporeNet/Vendor.h"
 
-#include "utils/functions.h"
-#include "utils/json.h"
+#include "Core/Utils/Functions.h"
+#include "Core/Utils/JSON.h"
 
-#include "installer.h"
+#include "Installer.h"
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
@@ -395,7 +395,7 @@ namespace Game {
 		});
 
 		// Game
-		router->add("/game/api", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
+		router->add("/Game/api", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
 			response.result() = boost::beast::http::status::ok;
 
 			// TODO: fix all of these things, its so ugly
@@ -501,7 +501,7 @@ namespace Game {
 			} else if (method == "api.leaderboard.getLeaderboard") {
 				game_leaderboard_getLeaderboard(session, response);
 			} else {
-				std::cout << "Undefined /game/api method: " << method << std::endl;
+				std::cout << "Undefined /Game/api method: " << method << std::endl;
 				for (const auto& [name, value] : request.uri) {
 					std::cout << name << " = " << value << std::endl;
 				}
@@ -538,7 +538,7 @@ namespace Game {
 			response.body() = std::move(path);
 		});
 
-		router->add("/game/service/png", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
+		router->add("/Game/service/png", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
 			const auto& request = session.get_request();
 
 			std::string storagePath = Config::Get(CONFIG_STORAGE_PATH);
@@ -719,17 +719,17 @@ namespace Game {
 			responseWithFileInStorage(session, response, Config::Get(CONFIG_WWW_STATIC_PATH));
 		});
 
-		router->add("/web/sporelabsgame/([/a-zA-Z0-9\\-_.]*)", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
+		router->add("/web/sporelabsGame/([/a-zA-Z0-9\\-_.]*)", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
 			responseWithFileInStorage(session, response, Config::Get(CONFIG_WWW_STATIC_PATH));
 		});
 
 		router->add("/web/sporelabs/alerts", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
-			// response.body() = utils::EAWebKit::loadFile("www/ingame/announce.html");
+			// response.body() = utils::EAWebKit::loadFile("www/inGame/announce.html");
 			response.result() = boost::beast::http::status::not_found;
 		});
 
 		router->add("/web/sporelabs/resetpassword", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
-			// response.body() = utils::EAWebKit::loadFile("www/ingame/resetpassword.html");
+			// response.body() = utils::EAWebKit::loadFile("www/inGame/resetpassword.html");
 			response.result() = boost::beast::http::status::not_found;
 		});
 

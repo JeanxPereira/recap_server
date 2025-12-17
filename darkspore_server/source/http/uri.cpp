@@ -1,8 +1,8 @@
 
 // Include
-#include "uri.h"
+#include "URI.h"
 
-#include "utils/functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <charconv>
 

@@ -4,8 +4,8 @@
 
 // Include
 // #include "enums.h"
-#include "client.h"
-#include "types.h"
+#include "Client.h"
+#include "Types.h"
 
 // Network
 namespace Network {

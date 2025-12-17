@@ -1,6 +1,6 @@
 
 // Include
-#include "packet.h"
+#include "Packet.h"
 
 #ifdef _MSC_VER
 

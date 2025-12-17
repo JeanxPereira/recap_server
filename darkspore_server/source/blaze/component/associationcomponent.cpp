@@ -1,11 +1,11 @@
 
 // Include
-#include "associationcomponent.h"
-#include "playgroupscomponent.h"
+#include "AssociationComponent.h"
+#include "PlaygroupsComponent.h"
 
-#include "blaze/client.h"
-#include "blaze/functions.h"
-#include "utils/functions.h"
+#include "Blaze/Client.h"
+#include "Blaze/Functions.h"
+#include "Core/Utils/Functions.h"
 
 #include <iostream>
 
