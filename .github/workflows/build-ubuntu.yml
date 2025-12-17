@@ -18,6 +18,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Prepare CPM cache dir
+        run: mkdir -p darkspore_server/.cpm-cache
+
+      - name: Cache CPM (CPM_SOURCE_CACHE)
+        uses: actions/cache@v4
+        with:
+          path: darkspore_server/.cpm-cache
+          key: cpm-${{ runner.os }}-${{ hashFiles('darkspore_server/CMakeLists.txt', 'darkspore_server/cmake/**') }}
+          restore-keys: |
+            cpm-${{ runner.os }}-
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -30,12 +41,13 @@ jobs:
       - name: Configure
         run: |
           cd darkspore_server
+          export CPM_SOURCE_CACHE="$(pwd)/.cpm-cache"
           cmake . -B build -DCMAKE_INSTALL_PREFIX=./AppDir/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations -Wno-narrowing"
 
       - name: Build
         run: |
           cd darkspore_server
-          cmake --build build
+          cmake --build build --parallel
           cmake -DCOMPONENT=recap_server -Pbuild/cmake_install.cmake
 
       - uses: actions/upload-artifact@v4

@@ -20,6 +20,17 @@ jobs:
       - name: Check out sources
         uses: actions/checkout@v3
 
+      - name: Prepare CPM cache dir
+        run: mkdir -p darkspore_server/.cpm-cache
+
+      - name: Cache CPM (CPM_SOURCE_CACHE)
+        uses: actions/cache@v4
+        with:
+          path: darkspore_server/.cpm-cache
+          key: cpm-${{ runner.os }}-${{ hashFiles('darkspore_server/CMakeLists.txt', 'darkspore_server/cmake/**') }}
+          restore-keys: |
+            cpm-${{ runner.os }}-
+
       - name: Set up MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -44,13 +55,14 @@ jobs:
         run: |
           cd darkspore_server
           export PATH=/c/Users/runneradmin/nasm:$PATH
+          export CPM_SOURCE_CACHE="$(pwd)/.cpm-cache"
           cmake . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="C:\\hostedtoolcache\\windows\\perl\\5.30.3-thr\\x64\\bin" -DCMAKE_INSTALL_PREFIX=./dist
 
       - name: Build
         run: |
           cd darkspore_server/build
           export PATH=/c/Users/runneradmin/nasm:$PATH
-          cmake --build . --config Release
+          cmake --build . --config Release --parallel
           cmake -DCOMPONENT=recap_server -Pcmake_install.cmake
 
       - name: Adding needed files
