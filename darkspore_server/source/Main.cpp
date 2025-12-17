@@ -9,8 +9,8 @@
 #include "HTTP/URI.h"
 
 #include "Game/Config.h"
-#include "Game/noun.h"
-#include "Game/lua.h"
+#include "Game/Noun.h"
+#include "Game/Lua.h"
 
 #include "Game/AssetData/DBPFManager.h"
 #include "Game/AssetData/AssetData.h"
