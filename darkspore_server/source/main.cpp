@@ -14,7 +14,7 @@
 
 #include "game/AssetData/DBPFManager.h"
 #include "game/AssetData/AssetData.h"
-#include "game/AssetData.h"
+#include "game/AssetData/AssetData.h"
 
 #include "utils/net.h"
 
