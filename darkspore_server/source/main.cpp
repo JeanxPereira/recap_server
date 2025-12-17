@@ -11,8 +11,9 @@
 #include "game/config.h"
 #include "game/noun.h"
 #include "game/lua.h"
-#include "game/dbpfmanager.h"
-#include "game/assetdata.h"
+
+#include "game/AssetData/DBPFManager.h"
+#include "game/AssetData/AssetData.h"
 
 #include "utils/net.h"
 
