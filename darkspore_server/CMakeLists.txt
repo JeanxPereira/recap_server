@@ -73,7 +73,7 @@ CPMAddPackage("gh:zeux/pugixml@1.15")
 target_link_libraries(recap_server PRIVATE pugixml)
 
 # fmt
-CPMAddPackage("gh:fmtlib/fmt@12.1.0")
+CPMAddPackage("gh:fmtlib/fmt#12.1.0")
 target_link_libraries(recap_server PRIVATE fmt::fmt)
 
 # RapidJSON
