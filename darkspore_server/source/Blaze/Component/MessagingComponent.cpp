@@ -10,7 +10,7 @@
 #include "Game/gamemanager.h"
 #include "Game/lua.h"
 
-#include "RakNet/server.h"
+#include "RakNet/Server.h"
 
 #include "Blaze/Client.h"
 #include "Blaze/Functions.h"

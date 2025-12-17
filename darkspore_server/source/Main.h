@@ -6,8 +6,8 @@
 #include "Core/Base/Predefined.h"
 
 #include "Blaze/Server.h"
-#include "HTTP/server.h"
-#include "QoS/server.h"
+#include "HTTP/Server.h"
+#include "QoS/Server.h"
 #include "Game/API.h"
 
 #include <filesystem>
