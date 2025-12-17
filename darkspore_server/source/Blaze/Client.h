@@ -6,7 +6,7 @@
 #include "Types.h"
 #include "Functions.h"
 
-#include "network/Client.h"
+#include "Network/Client.h"
 
 #include "SporeNet/user.h"
 

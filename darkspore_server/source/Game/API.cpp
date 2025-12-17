@@ -1,7 +1,7 @@
 
 // Include
 #include "API.h"
-#include "config.h"
+#include "Config.h"
 
 #include "HTTP/Session.h"
 #include "HTTP/Router.h"
