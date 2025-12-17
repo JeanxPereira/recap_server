@@ -1,5 +1,6 @@
 # CMake build artifacts
 build/
+build_vs/
 
 # Darkspore install for tests
 darkspore/
