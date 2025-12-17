@@ -20,6 +20,13 @@ jobs:
       - name: Check out sources
         uses: actions/checkout@v3
 
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          update: true
+          pacboy: gcc:p cmake:p make:p
+
       - name: Prepare CPM cache dir
         run: mkdir -p darkspore_server/.cpm-cache
 
@@ -30,13 +37,6 @@ jobs:
           key: cpm-${{ runner.os }}-${{ hashFiles('darkspore_server/CMakeLists.txt', 'darkspore_server/cmake/**') }}
           restore-keys: |
             cpm-${{ runner.os }}-
-
-      - name: Set up MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: ucrt64
-          update: true
-          pacboy: gcc:p cmake:p make:p
 
       - name: Set up Perl
         uses: shogo82148/actions-setup-perl@v1
