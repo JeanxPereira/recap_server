@@ -1,6 +1,6 @@
 [
-    {
-        "id": 1667741389,
+	{
+		"id": 1667741389,
 		"nameLocaleId": "0x0ababafd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Blitz Alpha",
@@ -19,9 +19,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 749013658,
+	},
+	{
+		"id": 749013658,
 		"nameLocaleId": "0x0ab99d2e",
 		"descLocaleId": "0x0acaf252",
 		"name": "Sage Alpha",
@@ -40,9 +40,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3591937345,
+	},
+	{
+		"id": 3591937345,
 		"nameLocaleId": "0x0abaec01",
 		"descLocaleId": "0x0acaf252",
 		"name": "Wraith Alpha",
@@ -56,14 +56,14 @@
 		"statsTemplateAbilityKeyvalues": "",
 		"hasHands": true,
 		"hasFeet": true,
-		"abilityPassive": 0,
-		"abilityBasic": 0,
+		"abilityPassive": "CrushingDread",
+		"abilityBasic": "Pummel",
 		"abilityRandom": 0,
-		"abilitySpecial1": 0,
-		"abilitySpecial2": 0
-    },
-    {
-        "id": 3376462303,
+		"abilitySpecial1": "DeathsEmbrace",
+		"abilitySpecial2": "Ghostform"
+	},
+	{
+		"id": 3376462303,
 		"nameLocaleId": "0x0ab99618",
 		"descLocaleId": "0x0acaf252",
 		"name": "Goliath Alpha",
@@ -82,9 +82,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 576185321,
+	},
+	{
+		"id": 576185321,
 		"nameLocaleId": "0x0ab99a04",
 		"descLocaleId": "0x0acaf252",
 		"name": "Zrin Alpha",
@@ -103,9 +103,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2128242117,
+	},
+	{
+		"id": 2128242117,
 		"nameLocaleId": "0x0ab966d2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arakna Alpha",
@@ -124,9 +124,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3618328019,
+	},
+	{
+		"id": 3618328019,
 		"nameLocaleId": "0x0ab99cc0",
 		"descLocaleId": "0x0acaf252",
 		"name": "Vex Alpha",
@@ -145,9 +145,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1237326306,
+	},
+	{
+		"id": 1237326306,
 		"nameLocaleId": "0x0abaeb00",
 		"descLocaleId": "0x0acaf252",
 		"name": "Viper Alpha",
@@ -166,9 +166,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 963807461,
+	},
+	{
+		"id": 963807461,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Lumin Alpha",
@@ -187,9 +187,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3914325063,
+	},
+	{
+		"id": 3914325063,
 		"nameLocaleId": "0x0abaed5f",
 		"descLocaleId": "0x0acaf252",
 		"name": "Jinx Alpha",
@@ -208,9 +208,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3524487169,
+	},
+	{
+		"id": 3524487169,
 		"nameLocaleId": "0x0abae8cc",
 		"descLocaleId": "0x0acaf252",
 		"name": "SRS-42 Alpha",
@@ -229,9 +229,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2954534111,
+	},
+	{
+		"id": 2954534111,
 		"nameLocaleId": "0x0ababbfe",
 		"descLocaleId": "0x0acaf252",
 		"name": "Magnos Alpha",
@@ -250,9 +250,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1770764384,
+	},
+	{
+		"id": 1770764384,
 		"nameLocaleId": "0x0abab670",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arborus Alpha",
@@ -271,9 +271,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3068979135,
+	},
+	{
+		"id": 3068979135,
 		"nameLocaleId": "0x0abae9d4",
 		"descLocaleId": "0x0acaf252",
 		"name": "Titan Alpha",
@@ -292,9 +292,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3911756266,
+	},
+	{
+		"id": 3911756266,
 		"nameLocaleId": "0x0abade4a",
 		"descLocaleId": "0x0acaf252",
 		"name": "Maldri Alpha",
@@ -313,9 +313,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3801146583,
+	},
+	{
+		"id": 3801146583,
 		"nameLocaleId": "0x0abae50d",
 		"descLocaleId": "0x0acaf252",
 		"name": "Revenant Alpha",
@@ -334,9 +334,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1392397193,
+	},
+	{
+		"id": 1392397193,
 		"nameLocaleId": "0x0abadcf2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Krel Alpha",
@@ -355,9 +355,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3877795735,
+	},
+	{
+		"id": 3877795735,
 		"nameLocaleId": "0x0abac0df",
 		"descLocaleId": "0x0acaf252",
 		"name": "Andromeda Alpha",
@@ -376,9 +376,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1557965449,
+	},
+	{
+		"id": 1557965449,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Meditron Alpha",
@@ -397,9 +397,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3660811270,
+	},
+	{
+		"id": 3660811270,
 		"nameLocaleId": "0x0ad68365",
 		"descLocaleId": "0x0acaf252",
 		"name": "Savage Alpha",
@@ -418,9 +418,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 454054015,
+	},
+	{
+		"id": 454054015,
 		"nameLocaleId": "0x0ababafd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Blitz Beta",
@@ -439,9 +439,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1986637994,
+	},
+	{
+		"id": 1986637994,
 		"nameLocaleId": "0x0ab99d2e",
 		"descLocaleId": "0x0acaf252",
 		"name": "Sage Beta",
@@ -460,9 +460,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4201941707,
+	},
+	{
+		"id": 4201941707,
 		"nameLocaleId": "0x0abaec01",
 		"descLocaleId": "0x0acaf252",
 		"name": "Wraith Beta",
@@ -481,9 +481,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2530835539,
+	},
+	{
+		"id": 2530835539,
 		"nameLocaleId": "0x0ab99a04",
 		"descLocaleId": "0x0acaf252",
 		"name": "Zrin Beta",
@@ -502,9 +502,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3948469269,
+	},
+	{
+		"id": 3948469269,
 		"nameLocaleId": "0x0ab99618",
 		"descLocaleId": "0x0acaf252",
 		"name": "Goliath Beta",
@@ -523,9 +523,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3600769362,
+	},
+	{
+		"id": 3600769362,
 		"nameLocaleId": "0x0abaeb00",
 		"descLocaleId": "0x0acaf252",
 		"name": "Viper Beta",
@@ -544,9 +544,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4234304479,
+	},
+	{
+		"id": 4234304479,
 		"nameLocaleId": "0x0abae2dd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Seraph-XS Delta",
@@ -565,9 +565,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2464059380,
+	},
+	{
+		"id": 2464059380,
 		"nameLocaleId": "0x0abae2dd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Seraph-XS Gamma",
@@ -586,9 +586,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 820281267,
+	},
+	{
+		"id": 820281267,
 		"nameLocaleId": "0x0abae2dd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Seraph-XS Alpha",
@@ -607,9 +607,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2726720353,
+	},
+	{
+		"id": 2726720353,
 		"nameLocaleId": "0x0abae2dd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Seraph-XS Beta",
@@ -628,9 +628,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3918493889,
+	},
+	{
+		"id": 3918493889,
 		"nameLocaleId": "0x0ab99cc0",
 		"descLocaleId": "0x0acaf252",
 		"name": "Vex Beta",
@@ -649,9 +649,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1475341687,
+	},
+	{
+		"id": 1475341687,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Lumin Beta",
@@ -670,9 +670,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 818452503,
+	},
+	{
+		"id": 818452503,
 		"nameLocaleId": "0x0ab966d2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arakna Beta",
@@ -691,9 +691,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2445894411,
+	},
+	{
+		"id": 2445894411,
 		"nameLocaleId": "0x0abae8cc",
 		"descLocaleId": "0x0acaf252",
 		"name": "SRS-42 Beta",
@@ -712,9 +712,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3639041301,
+	},
+	{
+		"id": 3639041301,
 		"nameLocaleId": "0x0ababbfe",
 		"descLocaleId": "0x0acaf252",
 		"name": "Magnos Beta",
@@ -733,9 +733,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1442915581,
+	},
+	{
+		"id": 1442915581,
 		"nameLocaleId": "0x0abaed5f",
 		"descLocaleId": "0x0acaf252",
 		"name": "Jinx Beta",
@@ -754,9 +754,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1957997466,
+	},
+	{
+		"id": 1957997466,
 		"nameLocaleId": "0x0abae0d9",
 		"descLocaleId": "0x0acaf252",
 		"name": "Tork Alpha",
@@ -775,9 +775,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 647027626,
+	},
+	{
+		"id": 647027626,
 		"nameLocaleId": "0x0abae0d9",
 		"descLocaleId": "0x0acaf252",
 		"name": "Tork Beta",
@@ -796,9 +796,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 308338531,
+	},
+	{
+		"id": 308338531,
 		"nameLocaleId": "0x0abae0d9",
 		"descLocaleId": "0x0acaf252",
 		"name": "Tork Gamma",
@@ -817,9 +817,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2564618664,
+	},
+	{
+		"id": 2564618664,
 		"nameLocaleId": "0x0abae0d9",
 		"descLocaleId": "0x0acaf252",
 		"name": "Tork Delta",
@@ -838,9 +838,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 885383220,
+	},
+	{
+		"id": 885383220,
 		"nameLocaleId": "0x0abab670",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arborus Beta",
@@ -859,9 +859,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1194511925,
+	},
+	{
+		"id": 1194511925,
 		"nameLocaleId": "0x0abae9d4",
 		"descLocaleId": "0x0acaf252",
 		"name": "Titan Beta",
@@ -880,9 +880,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4235360698,
+	},
+	{
+		"id": 4235360698,
 		"nameLocaleId": "0x0abade4a",
 		"descLocaleId": "0x0acaf252",
 		"name": "Maldri Beta",
@@ -901,9 +901,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3764918702,
+	},
+	{
+		"id": 3764918702,
 		"nameLocaleId": "0x0ad68365",
 		"descLocaleId": "0x0acaf252",
 		"name": "Savage Beta",
@@ -922,9 +922,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1705842957,
+	},
+	{
+		"id": 1705842957,
 		"nameLocaleId": "0x0abae50d",
 		"descLocaleId": "0x0acaf252",
 		"name": "Revenant Beta",
@@ -943,9 +943,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1350762291,
+	},
+	{
+		"id": 1350762291,
 		"nameLocaleId": "0x0abadcf2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Krel Beta",
@@ -964,9 +964,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3384561464,
+	},
+	{
+		"id": 3384561464,
 		"nameLocaleId": "0x0abac2b1",
 		"descLocaleId": "0x0acaf252",
 		"name": "Char Gamma",
@@ -985,9 +985,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4231592197,
+	},
+	{
+		"id": 4231592197,
 		"nameLocaleId": "0x0abac2b1",
 		"descLocaleId": "0x0acaf252",
 		"name": "Char Beta",
@@ -1006,9 +1006,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2828322511,
+	},
+	{
+		"id": 2828322511,
 		"nameLocaleId": "0x0abac2b1",
 		"descLocaleId": "0x0acaf252",
 		"name": "Char Alpha",
@@ -1027,9 +1027,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 709733043,
+	},
+	{
+		"id": 709733043,
 		"nameLocaleId": "0x0abac2b1",
 		"descLocaleId": "0x0acaf252",
 		"name": "Char Delta",
@@ -1048,9 +1048,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 185979955,
+	},
+	{
+		"id": 185979955,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Meditron Beta",
@@ -1069,9 +1069,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1879520589,
+	},
+	{
+		"id": 1879520589,
 		"nameLocaleId": "0x0abac0df",
 		"descLocaleId": "0x0acaf252",
 		"name": "Andromeda Beta",
@@ -1090,9 +1090,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1647948899,
+	},
+	{
+		"id": 1647948899,
 		"nameLocaleId": "0x0ab99d2e",
 		"descLocaleId": "0x0acaf252",
 		"name": "Sage Gamma",
@@ -1111,9 +1111,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 171910024,
+	},
+	{
+		"id": 171910024,
 		"nameLocaleId": "0x0ab99618",
 		"descLocaleId": "0x0acaf252",
 		"name": "Goliath Gamma",
@@ -1132,9 +1132,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 753829266,
+	},
+	{
+		"id": 753829266,
 		"nameLocaleId": "0x0abaec01",
 		"descLocaleId": "0x0acaf252",
 		"name": "Wraith Gamma",
@@ -1153,9 +1153,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1839725446,
+	},
+	{
+		"id": 1839725446,
 		"nameLocaleId": "0x0ababafd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Blitz Gamma",
@@ -1174,9 +1174,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2230947705,
+	},
+	{
+		"id": 2230947705,
 		"nameLocaleId": "0x0abae689",
 		"descLocaleId": "0x0acaf252",
 		"name": "Skar Delta",
@@ -1195,9 +1195,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 239643518,
+	},
+	{
+		"id": 239643518,
 		"nameLocaleId": "0x0abae689",
 		"descLocaleId": "0x0acaf252",
 		"name": "Skar Gamma",
@@ -1216,9 +1216,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1014804343,
+	},
+	{
+		"id": 1014804343,
 		"nameLocaleId": "0x0abae689",
 		"descLocaleId": "0x0acaf252",
 		"name": "Skar Beta",
@@ -1237,9 +1237,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1574801125,
+	},
+	{
+		"id": 1574801125,
 		"nameLocaleId": "0x0abae689",
 		"descLocaleId": "0x0acaf252",
 		"name": "Skar Alpha",
@@ -1258,9 +1258,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 43291678,
+	},
+	{
+		"id": 43291678,
 		"nameLocaleId": "0x0ab966d2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arakna Gamma",
@@ -1279,9 +1279,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2712234379,
+	},
+	{
+		"id": 2712234379,
 		"nameLocaleId": "0x0abaeb00",
 		"descLocaleId": "0x0acaf252",
 		"name": "Viper Gamma",
@@ -1300,9 +1300,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3863798170,
+	},
+	{
+		"id": 3863798170,
 		"nameLocaleId": "0x0ab99a04",
 		"descLocaleId": "0x0acaf252",
 		"name": "Zrin Gamma",
@@ -1321,9 +1321,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 700180862,
+	},
+	{
+		"id": 700180862,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Lumin Gamma",
@@ -1342,9 +1342,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4026895060,
+	},
+	{
+		"id": 4026895060,
 		"nameLocaleId": "0x0ab99cc0",
 		"descLocaleId": "0x0acaf252",
 		"name": "Vex Gamma",
@@ -1363,9 +1363,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3334429394,
+	},
+	{
+		"id": 3334429394,
 		"nameLocaleId": "0x0abae8cc",
 		"descLocaleId": "0x0acaf252",
 		"name": "SRS-42 Gamma",
@@ -1384,9 +1384,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1240945542,
+	},
+	{
+		"id": 1240945542,
 		"nameLocaleId": "0x0abadf9c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Orion Alpha",
@@ -1405,9 +1405,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3225553966,
+	},
+	{
+		"id": 3225553966,
 		"nameLocaleId": "0x0abadf9c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Orion Beta",
@@ -1426,9 +1426,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 725345831,
+	},
+	{
+		"id": 725345831,
 		"nameLocaleId": "0x0abadf9c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Orion Gamma",
@@ -1447,9 +1447,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3255874076,
+	},
+	{
+		"id": 3255874076,
 		"nameLocaleId": "0x0abadf9c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Orion Delta",
@@ -1468,9 +1468,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3775172336,
+	},
+	{
+		"id": 3775172336,
 		"nameLocaleId": "0x0abaed5f",
 		"descLocaleId": "0x0acaf252",
 		"name": "Jinx Gamma",
@@ -1489,9 +1489,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4157449352,
+	},
+	{
+		"id": 4157449352,
 		"nameLocaleId": "0x0ababbfe",
 		"descLocaleId": "0x0acaf252",
 		"name": "Magnos Gamma",
@@ -1510,9 +1510,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1614078369,
+	},
+	{
+		"id": 1614078369,
 		"nameLocaleId": "0x0abab670",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arborus Gamma",
@@ -1531,9 +1531,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3108182650,
+	},
+	{
+		"id": 3108182650,
 		"nameLocaleId": "0x0abadcf2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Krel Gamma",
@@ -1552,9 +1552,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1341857832,
+	},
+	{
+		"id": 1341857832,
 		"nameLocaleId": "0x0abae9d4",
 		"descLocaleId": "0x0acaf252",
 		"name": "Titan Gamma",
@@ -1573,9 +1573,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2902294899,
+	},
+	{
+		"id": 2902294899,
 		"nameLocaleId": "0x0abade4a",
 		"descLocaleId": "0x0acaf252",
 		"name": "Maldri Gamma",
@@ -1594,9 +1594,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4216313792,
+	},
+	{
+		"id": 4216313792,
 		"nameLocaleId": "0x0abac0df",
 		"descLocaleId": "0x0acaf252",
 		"name": "Andromeda Gamma",
@@ -1615,9 +1615,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1264710567,
+	},
+	{
+		"id": 1264710567,
 		"nameLocaleId": "0x0ad68365",
 		"descLocaleId": "0x0acaf252",
 		"name": "Savage Gamma",
@@ -1636,9 +1636,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1943400314,
+	},
+	{
+		"id": 1943400314,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Meditron Gamma",
@@ -1657,9 +1657,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2911848321,
+	},
+	{
+		"id": 2911848321,
 		"nameLocaleId": "0x0ababafd",
 		"descLocaleId": "0x0acaf252",
 		"name": "Blitz Delta",
@@ -1678,9 +1678,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4000956288,
+	},
+	{
+		"id": 4000956288,
 		"nameLocaleId": "0x0abae50d",
 		"descLocaleId": "0x0acaf252",
 		"name": "Revenant Gamma",
@@ -1699,9 +1699,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3904229032,
+	},
+	{
+		"id": 3904229032,
 		"nameLocaleId": "0x0ab99d2e",
 		"descLocaleId": "0x0acaf252",
 		"name": "Sage Delta",
@@ -1720,9 +1720,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1786139715,
+	},
+	{
+		"id": 1786139715,
 		"nameLocaleId": "0x0ab99618",
 		"descLocaleId": "0x0acaf252",
 		"name": "Goliath Delta",
@@ -1741,9 +1741,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 962104613,
+	},
+	{
+		"id": 962104613,
 		"nameLocaleId": "0x0ab99a04",
 		"descLocaleId": "0x0acaf252",
 		"name": "Zrin Delta",
@@ -1762,9 +1762,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 4177427677,
+	},
+	{
+		"id": 4177427677,
 		"nameLocaleId": "0x0abaec01",
 		"descLocaleId": "0x0acaf252",
 		"name": "Wraith Delta",
@@ -1783,9 +1783,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 713294352,
+	},
+	{
+		"id": 713294352,
 		"nameLocaleId": "0x0abaeb00",
 		"descLocaleId": "0x0acaf252",
 		"name": "Viper Delta",
@@ -1804,9 +1804,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1077715391,
+	},
+	{
+		"id": 1077715391,
 		"nameLocaleId": "0x0ab99cc0",
 		"descLocaleId": "0x0acaf252",
 		"name": "Vex Delta",
@@ -1825,9 +1825,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1663327385,
+	},
+	{
+		"id": 1663327385,
 		"nameLocaleId": "0x0ab966d2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arakna Delta",
@@ -1846,9 +1846,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2038499613,
+	},
+	{
+		"id": 2038499613,
 		"nameLocaleId": "0x0abae8cc",
 		"descLocaleId": "0x0acaf252",
 		"name": "SRS-42 Delta",
@@ -1867,9 +1867,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 2691485049,
+	},
+	{
+		"id": 2691485049,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Lumin Delta",
@@ -1888,9 +1888,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1850310379,
+	},
+	{
+		"id": 1850310379,
 		"nameLocaleId": "0x0abaed5f",
 		"descLocaleId": "0x0acaf252",
 		"name": "Jinx Delta",
@@ -1909,9 +1909,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 117394854,
+	},
+	{
+		"id": 117394854,
 		"nameLocaleId": "0x0abab670",
 		"descLocaleId": "0x0acaf252",
 		"name": "Arborus Delta",
@@ -1930,9 +1930,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1476711747,
+	},
+	{
+		"id": 1476711747,
 		"nameLocaleId": "0x0ababbfe",
 		"descLocaleId": "0x0acaf252",
 		"name": "Magnos Delta",
@@ -1951,9 +1951,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3380544995,
+	},
+	{
+		"id": 3380544995,
 		"nameLocaleId": "0x0abae9d4",
 		"descLocaleId": "0x0acaf252",
 		"name": "Titan Delta",
@@ -1972,9 +1972,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 758141691,
+	},
+	{
+		"id": 758141691,
 		"nameLocaleId": "0x0abae50d",
 		"descLocaleId": "0x0acaf252",
 		"name": "Revenant Delta",
@@ -1993,9 +1993,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 1240682488,
+	},
+	{
+		"id": 1240682488,
 		"nameLocaleId": "0x0abade4a",
 		"descLocaleId": "0x0acaf252",
 		"name": "Maldri Delta",
@@ -2014,9 +2014,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 577654149,
+	},
+	{
+		"id": 577654149,
 		"nameLocaleId": "0x0abadcf2",
 		"descLocaleId": "0x0acaf252",
 		"name": "Krel Delta",
@@ -2035,9 +2035,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3707839109,
+	},
+	{
+		"id": 3707839109,
 		"nameLocaleId": "0x0ababd4c",
 		"descLocaleId": "0x0acaf252",
 		"name": "Meditron Delta",
@@ -2056,9 +2056,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 3795238812,
+	},
+	{
+		"id": 3795238812,
 		"nameLocaleId": "0x0ad68365",
 		"descLocaleId": "0x0acaf252",
 		"name": "Savage Delta",
@@ -2077,9 +2077,9 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    },
-    {
-        "id": 507464763,
+	},
+	{
+		"id": 507464763,
 		"nameLocaleId": "0x0abac0df",
 		"descLocaleId": "0x0acaf252",
 		"name": "Andromeda Delta",
@@ -2098,5 +2098,5 @@
 		"abilityRandom": 0,
 		"abilitySpecial1": 0,
 		"abilitySpecial2": 0
-    }
+	}
 ]

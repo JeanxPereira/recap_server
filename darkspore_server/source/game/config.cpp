@@ -79,7 +79,7 @@ namespace Game {
 			}
 		};
 
-		mConfig[CONFIG_SKIP_LAUNCHER] = "false";
+		mConfig[CONFIG_SKIP_LAUNCHER] = "true";
 		mConfig[CONFIG_VERSION_LOCKED] = "false";
 		mConfig[CONFIG_SINGLEPLAYER_ONLY] = "true";
 		mConfig[CONFIG_SERVER_HOST] = "127.0.0.1";

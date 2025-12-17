@@ -26,66 +26,75 @@ namespace Game {
 	using AbilityPtr = std::shared_ptr<Ability>;
 
 	// LuaThread
-	class LuaThread {
-		public:
-			using ResumeCondition = std::function<bool(lua_State*, sol::variadic_results&)>;
+	class LuaThread
+	{
+	public:
+		using ResumeCondition = std::function<bool(lua_State *, sol::variadic_results &)>;
 
-		public:
-			LuaThread(Lua& lua);
+	public:
+		LuaThread(Lua &lua);
 
-			decltype(auto) lua_state() const { return mThread.thread_state(); }
-			decltype(auto) status() const { return mThread.status(); }
+		decltype(auto) lua_state() const { return mThread.thread_state(); }
+		decltype(auto) status() const { return mThread.status(); }
 
-			sol::object get_value(const std::string& key) const;
-			void set_value(const std::string& key, sol::object&& value);
+		sol::object get_value(const std::string &key) const;
+		void set_value(const std::string &key, sol::object &&value);
 
-			bool resume();
-			void stop();
+		bool resume();
+		void stop();
 
-			void set_resume_condition(const ResumeCondition& condition);
-			void set_resume_condition(ResumeCondition&& condition);
+		void set_resume_condition(const ResumeCondition &condition);
+		void set_resume_condition(ResumeCondition &&condition);
 
-			template<typename Result, typename... Args>
-			decltype(auto) call(const sol::function& func, Args&&... args) {
-				create(func);
+		template <typename Result, typename... Args>
+		decltype(auto) call(const sol::function &func, Args &&...args)
+		{
+			create(func);
 
-				sol::protected_function_result result = mCoroutine(std::forward<Args>(args)...);
-				if (result.valid()) {
-					post_call();
-				} else {
-					sol::error err = result;
-					std::cout << "LuaThread::call()" << std::endl;
-					std::cout << err.what() << std::endl;
-					std::cout << std::to_underlying(mCoroutine.status()) << std::endl;
-				}
-
-				if constexpr (!std::is_void_v<Result>) {
-					return static_cast<Result>(result);
-				}
+			sol::protected_function_result result = mCoroutine(std::forward<Args>(args)...);
+			if (result.valid())
+			{
+				post_call();
+			}
+			else
+			{
+				sol::error err = result;
+				std::cout << "LuaThread::call()" << std::endl;
+				std::cout << err.what() << std::endl;
+				std::cout << std::to_underlying(mCoroutine.status()) << std::endl;
 			}
 
-			template<typename Result, typename... Args>
-			auto call(const sol::environment& env, const sol::function& func, Args&&... args) {
-				env.set_on(mThread);
-				return call<Result>(func, std::forward<Args>(args)...);
+			if constexpr (!std::is_void_v<Result>)
+			{
+				return static_cast<Result>(result);
 			}
+		}
 
-		private:
-			void create(const sol::function& func);
-			void post_call();
-		
-		private:
-			Lua& mLua;
-			
-			std::unordered_map<std::string, sol::object> mValues;
+		template <typename Result, typename... Args>
+		auto call(const sol::environment &env, const sol::function &func, Args &&...args)
+		{
+			env.set_on(mThread);
+			return call<Result>(func, std::forward<Args>(args)...);
+		}
 
-			ResumeCondition mResumeCondition;
+	private:
+		void create(const sol::function &func);
+		void post_call();
 
-			sol::thread mThread;
-			sol::coroutine mCoroutine;
-			sol::environment mEnvironment;
+	private:
+		Lua &mLua;
 
-			friend class Lua;
+		std::unordered_map<std::string, sol::object> mValues;
+
+		ResumeCondition mResumeCondition;
+
+		sol::thread mThread;
+		sol::coroutine mCoroutine;
+		sol::environment mEnvironment;
+
+		uint32_t mAbilityInstanceId{0};
+
+		friend class Lua;
 	};
 
 	// LuaBase
@@ -162,7 +171,7 @@ namespace Game {
 
 	// Lua
 	class Lua : public LuaBase {
-		public:
+	public:
 			Lua(Instance& game);
 			~Lua();
 
@@ -188,17 +197,40 @@ namespace Game {
 
 			template<typename Result, typename... Args>
 			auto CallCoroutine(std::nullptr_t, const sol::function& func, Args&&... args) {
-				return SpawnThread()->call<Result>(func, std::forward<Args>(args)...);
+					return SpawnThread()->call<Result>(func, std::forward<Args>(args)...);
 			}
 
 			template<typename Result, typename... Args>
 			auto CallCoroutine(const sol::environment& env, const sol::function& func, Args&&... args) {
-				return SpawnThread()->call<Result>(env, func, std::forward<Args>(args)...);
+					return SpawnThread()->call<Result>(env, func, std::forward<Args>(args)...);
 			}
 
 			void ReturnThreadToPool(LuaThread* thread);
 
-		private:
+			struct AbilityInstance {
+					uint32_t id;
+					Ability* ability;
+					ObjectPtr caster;
+					ObjectPtr target;
+					glm::vec3 targetPosition;
+					int32_t rank;
+					bool targetInRangeAtStart;
+					LuaThread* thread;
+			};
+
+			uint32_t RegisterAbilityInstance(Ability* ability,
+																			ObjectPtr caster,
+																			ObjectPtr target,
+																			const glm::vec3& position,
+																			int32_t rank,
+																			bool targetInRangeAtStart,
+																			LuaThread* thread);
+
+			AbilityInstance* GetAbilityInstance(uint32_t id);
+			AbilityInstance* GetAbilityInstanceFromThread(LuaThread* thread);
+			void DestroyAbilityInstance(uint32_t id);
+
+	private:
 			// luafunctions.cpp
 			void RegisterEnums();
 			void RegisterFunctions();
@@ -214,7 +246,7 @@ namespace Game {
 			void RegisterObjective();
 			void RegisterTriggerVolume();
 
-		private:
+	private:
 			Instance& mGame;
 
 			std::unordered_map<lua_State*, LuaThread*> mThreads;
@@ -224,7 +256,11 @@ namespace Game {
 			std::unordered_set<LuaThread*> mYieldedThreads;
 
 			std::vector<LuaThread*> mThreadPool;
+
+			uint32_t mNextAbilityInstanceId{1};
+			std::unordered_map<uint32_t, AbilityInstance> mAbilityInstances;
 	};
+
 
 	// Coroutine
 	class Coroutine {
@@ -254,58 +290,76 @@ namespace Game {
 	};
 
 	// Ability
-	class Ability : public Coroutine {
-		public:
-			Ability(Lua& lua, sol::table&& self, const std::string& name, uint32_t id);
+	class Ability : public Coroutine
+	{
+	public:
+		Ability(Lua &lua, sol::table &&self, const std::string &name, uint32_t id);
 
-			// properties
-			const std::string& GetName() const;
+		const std::string &GetName() const;
 
-			Descriptors GetDescriptors() const;
-			AttributeType GetScalingAttribute() const;
-			InterfaceType GetInterface() const;
+		Descriptors GetDescriptors() const;
+		AttributeType GetScalingAttribute() const;
+		InterfaceType GetInterface() const;
 
-			uint32_t GetId() const;
+		uint8_t GetAnimationSequenceIndex() const;
+		void PlayAnimationSequence(Game::Instance& game);
 
-			bool RequiresAgent() const;
-			bool HasGlobalCooldown() const;
-			bool ShouldPursue() const;
+		uint32_t GetId() const;
 
-			// methods
-			float GetManaCost(const ObjectPtr& object, int32_t rank, float value) const;
+		bool RequiresAgent() const;
+		bool HasGlobalCooldown() const;
+		bool ShouldPursue() const;
 
-			bool IsInRange(const ObjectPtr& object, const ObjectPtr& target, const glm::vec3& targetPosition, int32_t rank) const;
-			bool IsAbleToHit(const ObjectPtr& object, const ObjectPtr& target, const glm::vec3& targetPosition, int32_t rank) const;
+		float GetManaCost(const ObjectPtr &object, int32_t rank, float value) const;
 
-			// events
-			template<typename... Args>
-			auto Activate(Args&&... args) const {
-				return Call<void>(mActivateFn, std::forward<Args>(args)...);
-			}
+		bool IsInRange(const ObjectPtr &object, const ObjectPtr &target, const glm::vec3 &targetPosition, int32_t rank) const;
+		bool IsAbleToHit(const ObjectPtr &object, const ObjectPtr &target, const glm::vec3 &targetPosition, int32_t rank) const;
 
-			template<typename... Args>
-			auto Deactivate(Args&&... args) const {
-				return Call<void>(mDeactivateFn, std::forward<Args>(args)...);
-			}
+		template <typename... Args>
+		auto Activate(Args &&...args) const
+		{
+			return Call<void>(mActivateFn, std::forward<Args>(args)...);
+		}
 
-			bool Tick(ObjectPtr object, ObjectPtr target, glm::vec3 cursorPosition, int32_t rank) const;
+		template <typename... Args>
+		auto Deactivate(Args &&...args) const
+		{
+			return Call<void>(mDeactivateFn, std::forward<Args>(args)...);
+		}
 
-		private:
-			std::string mName {};
+		bool Tick(ObjectPtr object, ObjectPtr target, glm::vec3 cursorPosition, int32_t rank) const;
 
-			Descriptors mDescriptors;
-			AttributeType mScalingAttribute;
-			InterfaceType mInterface;
+		int32_t GetCurrentRank() const;
+		void SetCurrentRank(int32_t rank) const;
 
-			uint32_t mId { 0 };
+		ObjectPtr GetLastCaster() const;
+		ObjectPtr GetLastTarget() const;
+		glm::vec3 GetLastTargetPosition() const;
+		void SetContext(ObjectPtr caster, ObjectPtr target, const glm::vec3 &targetPosition) const;
 
-			bool mRequiresAgent { false };
-			bool mHasGlobalCooldown { false };
-			bool mShouldPursue { false };
+		sol::object GetProperty(lua_State *L, const std::string &name) const;
 
-			sol::function mActivateFn;
-			sol::function mDeactivateFn;
-			sol::function mTickFn;
+	private:
+		std::string mName{};
+
+		Descriptors mDescriptors;
+		AttributeType mScalingAttribute;
+		InterfaceType mInterface;
+
+		uint32_t mId{0};
+
+		bool mRequiresAgent{false};
+		bool mHasGlobalCooldown{false};
+		bool mShouldPursue{false};
+
+		mutable int32_t mCurrentRank{0};
+		mutable ObjectPtr mLastCaster;
+		mutable ObjectPtr mLastTarget;
+		mutable glm::vec3 mLastTargetPosition{0.0f, 0.0f, 0.0f};
+
+		sol::function mActivateFn;
+		sol::function mDeactivateFn;
+		sol::function mTickFn;
 	};
 
 	// Objective
