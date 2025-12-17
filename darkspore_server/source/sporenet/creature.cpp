@@ -3,6 +3,7 @@
 #include "creature.h"
 #include "instance.h"
 
+#include <initializer_list>
 #include "game/config.h"
 #include "utils/functions.h"
 #include "utils/json.h"
@@ -165,27 +166,31 @@ namespace SporeNet {
 
 	// TemplateCreature
 	void TemplateCreature::Read(const pugi::xml_node& node) {
-		mNoun = utils::hash_id(node.attribute("noun").as_string());
+    mNoun = utils::hash_id(node.attribute("noun").as_string());
 
-		mNameLocaleId = utils::xml_get_text_node(node, "name_locale_id");
-		mTextLocaleId = utils::xml_get_text_node(node, "text_locale_id");
+    mNameLocaleId = utils::xml_get_text_node(node, "name_locale_id");
+    mTextLocaleId = utils::xml_get_text_node(node, "text_locale_id");
 
-		mName = utils::xml_get_text_node(node, "name");
-		from_string(utils::xml_get_text_node(node, "type_a"), mType);
-		mBaseWeaponDamageMin = utils::xml_get_text_node<double>(node, "weapon_min_damage");
-		mBaseWeaponDamageMax = utils::xml_get_text_node<double>(node, "weapon_max_damage");
-		mGearScore = utils::xml_get_text_node<float>(node, "gear_score");
-		from_string(utils::xml_get_text_node(node, "class"), mClass);
-		from_string(utils::xml_get_text_node(node, "creature_parts"), mEquipableParts);
-
-		mAbility[0] = utils::hash_id(utils::xml_get_text_node(node, "ability_basic"));
-		mAbility[1] = utils::hash_id(utils::xml_get_text_node(node, "ability_special_1"));
-		mAbility[2] = utils::hash_id(utils::xml_get_text_node(node, "ability_special_2"));
-		mAbility[3] = utils::hash_id(utils::xml_get_text_node(node, "ability_random"));
-		mAbility[4] = utils::hash_id(utils::xml_get_text_node(node, "ability_passive"));
+    mName = utils::xml_get_text_node(node, "name");
+    from_string(utils::xml_get_text_node(node, "type_a"), mType);
+    mBaseWeaponDamageMin = utils::xml_get_text_node<double>(node, "weapon_min_damage");
+    mBaseWeaponDamageMax = utils::xml_get_text_node<double>(node, "weapon_max_damage");
+    mGearScore = utils::xml_get_text_node<float>(node, "gear_score");
+    from_string(utils::xml_get_text_node(node, "class"), mClass);
+    from_string(utils::xml_get_text_node(node, "creature_parts"), mEquipableParts);
 
 		// parse stats
-		const auto& statsString = utils::xml_get_text_node(node, "stats_template");
+    const auto& statsString = utils::xml_get_text_node(node, "stats_template");
+    mStats.clear();
+    for (const auto& statString : utils::explode_string(statsString, ';')) {
+        if (statString.empty()) continue;
+        const auto& statData = utils::explode_string(statString, ',');
+        if (statData.size() < 3) continue;
+        auto& stat = mStats.emplace_back();
+        stat.statName     = statData[0];
+        stat.maxValue     = utils::to_number<uint32_t>(statData[1]);
+        stat.currentValue = utils::to_number<uint32_t>(statData[2]);
+    }
 
 		mStats.clear();
 		for (const auto& statString : utils::explode_string(statsString, ';')) {
@@ -239,6 +244,27 @@ namespace SporeNet {
 		}
 	}
 
+	namespace {
+		static uint32_t ReadAbilitySlot(const rapidjson::Value& obj, const char* key) {
+				if (!obj.IsObject() || !obj.HasMember(key)) return 0;
+				const auto& v = obj[key];
+				if (v.IsUint())   return v.GetUint();
+				if (v.IsInt())    return static_cast<uint32_t>(v.GetInt());
+				if (v.IsUint64()) return static_cast<uint32_t>(v.GetUint64());
+				if (v.IsInt64())  return static_cast<uint32_t>(v.GetInt64());
+				if (v.IsString()) return utils::hash_id(v.GetString());
+				return 0;
+		}
+
+		static uint32_t ReadAbilitySlotManyKeys(const rapidjson::Value& obj,
+																						std::initializer_list<const char*> keys) {
+				for (const char* k : keys) {
+						if (uint32_t id = ReadAbilitySlot(obj, k)) return id;
+				}
+				return 0;
+		}
+	} // namespace
+	
 	void TemplateCreature::ReadJson(rapidjson::Value& object) {
 		if (!object.IsObject()) return;
 		mNoun = utils::json::GetUint(object, "id");
@@ -256,20 +282,72 @@ namespace SporeNet {
 		from_string(utils::json::GetString(object, "classType"), mClass);
 		from_string(utils::json::GetString(object, "classType"), mEquipableParts); // TODO: Should be a separate property?
 
+    uint32_t a0  = ReadAbilitySlotManyKeys(object, {"abilityBasic",    "basic",    "a0", "s0"});
+    uint32_t a1  = ReadAbilitySlotManyKeys(object, {"abilitySpecial1", "special1", "s1"});
+    uint32_t a2  = ReadAbilitySlotManyKeys(object, {"abilitySpecial2", "special2", "s2"});
+    uint32_t a3  = ReadAbilitySlotManyKeys(object, {"abilityRandom",   "random",   "rand"});
+    uint32_t pas = ReadAbilitySlotManyKeys(object, {"abilityPassive",  "passive",  "pas"});
+
+    if (object.HasMember("statsTemplateAbility") && object["statsTemplateAbility"].IsObject()) {
+        const auto& sta = object["statsTemplateAbility"];
+        if (!a0)  a0  = ReadAbilitySlotManyKeys(sta, {"abilityBasic","basic","a0","s0"});
+        if (!a1)  a1  = ReadAbilitySlotManyKeys(sta, {"abilitySpecial1","special1","s1"});
+        if (!a2)  a2  = ReadAbilitySlotManyKeys(sta, {"abilitySpecial2","special2","s2"});
+        if (!a3)  a3  = ReadAbilitySlotManyKeys(sta, {"abilityRandom","random","rand"});
+        if (!pas) pas = ReadAbilitySlotManyKeys(sta, {"abilityPassive","passive","pas"});
+    }
+
+    mAbility[0] = a0;
+    mAbility[1] = a1;
+    mAbility[2] = a2;
+    mAbility[3] = a3;
+    mAbility[4] = pas;
+
+    const auto& statsString = utils::json::GetString(object, "statsTemplate");
+    mStats.clear();
+    for (const auto& statString : utils::explode_string(statsString, ';')) {
+        if (statString.empty()) continue;
+        const auto& statData = utils::explode_string(statString, ',');
+        if (statData.size() < 3) continue;
+        auto& stat = mStats.emplace_back();
+        stat.statName     = statData[0];
+        stat.maxValue     = utils::to_number<uint32_t>(statData[1]);
+        stat.currentValue = utils::to_number<uint32_t>(statData[2]);
+    }
+
+    {
+        std::ios_base::fmtflags f(std::cout.flags());
+        std::cout << "[TPL] name=" << mName
+                  << " basic=" << std::hex << mAbility[0]
+                  << " s1="    << std::hex << mAbility[1]
+                  << " s2="    << std::hex << mAbility[2]
+                  << " rand="  << std::hex << mAbility[3]
+                  << " pas="   << std::hex << mAbility[4]
+                  << std::endl;
+        std::cout.flags(f);
+    }
+
 		//statsTemplateAbility = utils::json::GetString(object, "statsTemplateAbility");
 		//statsTemplateAbilityKeyvalues = utils::json::GetString(object, "statsTemplateAbilityKeyvalues");
 
 		// hasFeet  = utils::json::GetBool(object, "hasFeet");
 		// hasHands = utils::json::GetBool(object, "hasHands");
 
-		mAbility[0] = utils::json::GetUint64(object, "abilityBasic");
-		mAbility[1] = utils::json::GetUint64(object, "abilitySpecial1");
-		mAbility[2] = utils::json::GetUint64(object, "abilitySpecial2");
-		mAbility[3] = utils::json::GetUint64(object, "abilityRandom");
-		mAbility[4] = utils::json::GetUint64(object, "abilityPassive");
+		// auto __getAbilityId = [&](rapidjson::Value& obj, const char* key)->uint32_t {
+		// 		if (obj.HasMember(key)) {
+		// 				auto& v = obj[key];
+		// 				if (v.IsUint64()) return (uint32_t)v.GetUint64();
+		// 				if (v.IsInt64())  return (uint32_t)v.GetInt64();
+		// 				if (v.IsUint())   return (uint32_t)v.GetUint();
+		// 				if (v.IsInt())    return (uint32_t)v.GetInt();
+		// 				if (v.IsString()) return utils::hash_id(v.GetString());
+		// 		}
+		// 		return 0u;
+		// };
+
 
 		// parse stats
-		const auto& statsString = utils::json::GetString(object, "statsTemplate");
+		// const auto& statsString = utils::json::GetString(object, "statsTemplate");
 
 		mStats.clear();
 		for (const auto& statString : utils::explode_string(statsString, ';')) {

@@ -120,12 +120,13 @@ namespace {
 namespace LuaFunction {
 	// nMathUtil
 	namespace nMathUtil {
-		auto TransformVector(const glm::vec3& v, const glm::quat& q) {
-			return v * glm::eulerAngles(q);
-		}
+    auto TransformVector(const glm::vec3& v, const glm::quat& q) {
+        return glm::rotate(q, v);
+    }
 
 		auto RotateVectorByAxisAngle(const glm::vec3& v, const glm::vec3& axis, float angle) {
-			return v * glm::angleAxis(angle, axis);
+			auto q = glm::angleAxis(angle, axis);
+			return glm::rotate(q, v);
 		}
 
 		auto CircleIntersectsArc(const glm::vec3& position, float radius, float arcX, float arcY, float arcFacingX, float arcFacingY, float arcLength, float arcAngle) {
@@ -176,6 +177,72 @@ namespace LuaFunction {
 
 			}
 			return false;
+		}
+
+		inline glm::quat GetQuaternionFromFacingAndPosition(const glm::vec3& facing, const glm::vec3& position)
+		{
+				glm::vec3 axis = glm::normalize(facing);
+
+				glm::vec3 ref = position;
+
+				glm::vec3 side = glm::normalize(glm::cross(ref, axis));
+				glm::vec3 up   = glm::normalize(glm::cross(axis, side));
+
+				glm::mat3 basis(side, axis, up);
+
+				return glm::quat_cast(basis);
+		}
+
+		auto DistanceToLine(const glm::vec3& point, const glm::vec3& a, const glm::vec3& b) {
+				const glm::vec3 ab = b - a;
+				const float abLen2 = glm::dot(ab, ab);
+
+				if (abLen2 <= 0.0f) {
+						return glm::length(point - a);
+				}
+
+				const glm::vec3 ap = point - a;
+				const float t = glm::dot(ap, ab);
+
+				if (t <= 0.0f) {
+						return glm::length(point - a);
+				}
+
+				if (t >= abLen2) {
+						return glm::length(point - b);
+				}
+
+				const float tNorm = t / abLen2;
+				const glm::vec3 closest = a + tNorm * ab;
+
+				return glm::length(point - closest);
+		}
+
+		inline glm::vec3 ClosestPointOnLine(const glm::vec3 &point, const glm::vec3 &a, const glm::vec3 &b)
+		{
+			const glm::vec3 ab = b - a;
+			const float abLen2 = glm::dot(ab, ab);
+
+			if (abLen2 <= 0.0f)
+			{
+				return a;
+			}
+
+			const glm::vec3 ap = point - a;
+			float t = glm::dot(ap, ab);
+
+			if (t <= 0.0f)
+			{
+				return a;
+			}
+
+			if (t >= abLen2)
+			{
+				return b;
+			}
+
+			t /= abLen2;
+			return a + t * ab;
 		}
 	}
 
@@ -1109,8 +1176,8 @@ namespace Game {
 			);
 		}
 
-		RegisterMath();
 		RegisterUtil();
+		RegisterMath();
 		RegisterClient();
 		RegisterAbility();
 		RegisterPhysics();
@@ -1125,9 +1192,12 @@ namespace Game {
 
 	void LuaBase::RegisterMath() {
 		auto mathUtil = mState.create_named_table("nMathUtil");
-		mathUtil["TransformVector"] = &LuaFunction::nMathUtil::TransformVector;
 		mathUtil["RotateVectorByAxisAngle"] = &LuaFunction::nMathUtil::RotateVectorByAxisAngle;
+		mathUtil["TransformVector"] = &LuaFunction::nMathUtil::TransformVector;
 		mathUtil["CircleIntersectsArc"] = &LuaFunction::nMathUtil::CircleIntersectsArc;
+		mathUtil["GetQuaternionFromFacingAndPosition"] = &LuaFunction::nMathUtil::GetQuaternionFromFacingAndPosition;
+		mathUtil["DistanceToLine"] = &LuaFunction::nMathUtil::DistanceToLine;
+		mathUtil["ClosestPointOnLine"] = &LuaFunction::nMathUtil::ClosestPointOnLine;
 	}
 
 	void LuaBase::RegisterUtil() {
@@ -1998,17 +2068,17 @@ namespace Game {
 		object["GetOwnerObject"] = &Object::GetOwnerObject;
 		object["SetOwnerObject"] = &Object::SetOwnerObject;
 
-		object["PlayAnimationSequence"] = [this](sol::this_state L, sol::object objectValue, sol::table sequenceTable) {
-			auto ability = LuaGetAbility(L);
-			if (!ability) {
-				LogError(L, "Object.PlayAnimationSequence", "You may not call this function outside of an ability");
+		object["PlayAnimationSequence"] = [this](sol::this_state L, sol::object /*objectValue*/, sol::table /*sequenceTable*/)
+		{
+			auto *ability = LuaGetAbility(L);
+			if (!ability)
+			{
+				LogError(L, "Object.PlayAnimationSequence",
+								 "You may not call this function outside of an ability");
 				return;
 			}
 
-			auto object = LuaGetObject(mGame.GetObjectManager(), objectValue);
-			if (object) {
-
-			}
+			ability->PlayAnimationSequence(mGame);
 		};
 
 		object["SetAnimationState"] = &LuaFunction::Object::SetAnimationState;
@@ -2101,28 +2171,165 @@ namespace Game {
 		object["GetTeleporterDestination"] = &LuaFunction::Object::GetTeleporterDestination;
 	}
 
+	inline float ComputeBasicAttackAnimSpeedScale(const Ability &ability, const ObjectPtr &caster)
+	{
+			float speedScale = 1.0f;
+
+			if (!caster)
+					return speedScale;
+
+			const auto descriptors = ability.GetDescriptors();
+
+			if (!utils::enum_helper<Game::Descriptors>::test(descriptors, Game::Descriptors::IsBasic))
+					return speedScale;
+
+			if (!caster->HasAttributeData())
+					return speedScale;
+
+			float atkSpeed =
+					caster->GetAttributeValue(static_cast<uint8_t>(Game::AttributeType::AttackSpeedScale));
+
+			if (atkSpeed < -0.9f)
+					atkSpeed = -0.9f;
+
+			float v = atkSpeed + 1.0f;
+			if (v < 0.0f)
+					v = 0.0f;
+
+			speedScale = v;
+
+			return speedScale;
+	}
+
+	void Ability::PlayAnimationSequence(Game::Instance &game)
+	{
+			auto caster = GetLastCaster();
+			if (!caster)
+			{
+					return;
+			}
+
+			std::uint32_t warmupData = 0;
+
+			const float animSpeedScale = ComputeBasicAttackAnimSpeedScale(*this, caster);
+
+			const std::uint64_t now = utils::get_milliseconds();
+
+			const std::uint8_t sequenceIndex = GetAnimationSequenceIndex();
+
+			Game::AbilityAnimationSequenceMsg msg{};
+			msg.objectId      = caster->GetId();
+			msg.abilityId     = GetId();
+			msg.warmupData    = warmupData;
+			msg.timestamp     = now;
+			msg.animSpeedScale= animSpeedScale;
+			msg.sequenceIndex = sequenceIndex;
+
+			game.SendAbilityAnimationSequence(msg);
+	}
+
+	uint8_t Ability::GetAnimationSequenceIndex() const
+	{
+			auto *L = mLua.GetState();
+			if (L != nullptr)
+			{
+					sol::object value = GetProperty(L, "animationSequenceIndex");
+
+					if (value.is<uint8_t>())        return value.as<uint8_t>();
+					if (value.is<int>())            return static_cast<uint8_t>(value.as<int>());
+					if (value.is<unsigned int>())   return static_cast<uint8_t>(value.as<unsigned int>());
+					if (value.is<float>())          return static_cast<uint8_t>(value.as<float>());
+			}
+
+			return static_cast<uint8_t>(0);
+	}
+
+	ObjectPtr Ability::GetLastCaster() const
+	{
+		return mLastCaster;
+	}
+	
+	// nAbility
 	void Lua::RegisterAbility() {
 		auto ability = mState.create_named_table("Ability");
-		ability["Register"] = [this](sol::this_state L, sol::table ability) {
-			// TODO: validate ability
-			if (ability == sol::nil) {
+		auto nAbility = mState.create_named_table("nAbility");
+
+		auto registerAbility = [this](sol::this_state L, sol::table abilityTable, std::string nameOverride) {
+			if (abilityTable == sol::nil) {
 				LogError(L, "Ability.Register", "ability is nil");
 				return;
 			}
 
-			const auto& nameOption = ability["name"].get<sol::optional<std::string>>();
-			if (!nameOption) {
-				LogError(L, "Ability.Register", "ability has no name");
+			std::string name = std::move(nameOverride);
+
+			if (name.empty()) {
+				if (auto opt = abilityTable["name"].get<sol::optional<std::string>>()) {
+					name = *opt;
+				}
+				else if (auto opt2 = abilityTable["abilityName"].get<sol::optional<std::string>>()) {
+					name = *opt2;
+				}
+			}
+
+			if (name.empty()) {
+				LogError(L, "Ability.Register",
+								 "ability has no name (expected 'name' or 'abilityName')");
 				return;
 			}
-			
-			const auto& name = nameOption.value();
-			if (auto [it, inserted] = mAbilities.try_emplace(utils::hash_id(name)); inserted) {
-				ability["id"] = it->first;
-				it->second = std::make_shared<Ability>(*this, std::move(ability), name, it->first);
-			} else {
-				LogError(L, "Ability.Register", "trying to register " + name + " when it already exists");
+
+			abilityTable["name"] = name;
+
+			const auto id = utils::hash_id(name);
+			auto [it, inserted] = mAbilities.try_emplace(id);
+			if (!inserted) {
+				LogError(L, "Ability.Register",
+								 "trying to register " + name + " when it already exists");
+				return;
 			}
+
+			abilityTable["id"] = id;
+			it->second =
+					std::make_shared<Ability>(*this, std::move(abilityTable), name, id);
+		};
+
+		nAbility["GetAbilityID"] = [this](sol::this_state L) {
+        auto* ability = LuaGetAbility(L);
+        if (!ability) {
+            LogError(L, "nAbility.GetAbilityID",
+                     "You may not call this function outside of an ability");
+            return static_cast<uint32_t>(0);
+        }
+
+        return ability->GetId();
+    };
+
+		// ability["Register"] = [registerAbility](sol::this_state L, sol::table abilityTable) {
+		// 	// TODO: validate ability
+		// 	if (ability == sol::nil) {
+		// 		LogError(L, "Ability.Register", "ability is nil");
+		// 		return;
+		// 	}
+
+		// 	const auto& nameOption = ability["name"].get<sol::optional<std::string>>();
+		// 	if (!nameOption) {
+		// 		LogError(L, "Ability.Register", "ability has no name");
+		// 		return;
+		// 	}
+			
+		// 	const auto& name = nameOption.value();
+		// 	if (auto [it, inserted] = mAbilities.try_emplace(utils::hash_id(name)); inserted) {
+		// 		ability["id"] = it->first;
+		// 		it->second = std::make_shared<Ability>(*this, std::move(ability), name, it->first);
+		// 	} else {
+		// 		LogError(L, "Ability.Register", "trying to register " + name + " when it already exists");
+		// 	}
+		// };
+		ability["Register"] = [registerAbility](sol::this_state L, sol::table abilityTable) {
+			registerAbility(L, abilityTable, {});
+		};
+
+		nAbility["RegisterAbility"] = [registerAbility](sol::this_state L, std::string name, sol::table abilityTable) {
+			registerAbility(L, abilityTable, std::move(name));
 		};
 
 		ability["TargetInRangeAtStart"] = [this](sol::this_state L) -> bool {
@@ -2133,6 +2340,58 @@ namespace Game {
 			}
 			return true;
 		};
+
+		nAbility["PreloadAnimation"] = [this](sol::this_state L,
+                                          sol::object ownerValue,
+                                          std::string animationName) {
+        uint32_t ownerId = 0;
+
+        if (ownerValue.is<uint32_t>()) {
+            ownerId = ownerValue.as<uint32_t>();
+        }
+        else if (ownerValue.is<int>()) {
+            ownerId = static_cast<uint32_t>(ownerValue.as<int>());
+        }
+        else if (ownerValue.is<std::string>()) {
+            auto name = ownerValue.as<std::string>();
+            ownerId = utils::hash_id(name);
+        }
+        else if (ownerValue.is<Game::Ability*>()) {
+            auto* ability = ownerValue.as<Game::Ability*>();
+            ownerId = ability->GetId();
+        }
+        else {
+            LogError(L, "nAbility.PreloadAnimation",
+                     "Unsupported owner type for argument #1");
+            return 0u;
+        }
+
+        const uint32_t animationId = utils::hash_id(animationName);
+
+        return ownerId;
+    };
+
+    nAbility["GetAnimationSequenceIndex"] = [this](sol::this_state L) {
+        auto* ability = LuaGetAbility(L);
+        if (!ability) {
+            LogError(L, "nAbility.GetAnimationSequenceIndex",
+                     "You may not call this function outside of an ability");
+            return static_cast<uint8_t>(0);
+        }
+
+        return ability->GetAnimationSequenceIndex();
+    };
+
+    nAbility["PlayAnimationSequence"] = [this](sol::this_state L) {
+        auto* ability = LuaGetAbility(L);
+        if (!ability) {
+            LogError(L, "nAbility.PlayAnimationSequence",
+                     "You may not call this function outside of an ability");
+            return;
+        }
+
+        ability->PlayAnimationSequence(mGame);
+    };
 	}
 
 	void Lua::RegisterObjective() {

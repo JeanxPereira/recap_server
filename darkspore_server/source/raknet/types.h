@@ -877,6 +877,11 @@ namespace RakNet {
 
 	// AbilityCommandResponse
 	struct AbilityCommandResponse {
+		uint64_t objectId;
+		uint32_t cooldownMs;
+		uint32_t timeImmobilizedMs;
+		uint8_t accepted;
+
 		uint64_t cooldown;
 		uint64_t timeImmobilized;
 		uint32_t abilityId;

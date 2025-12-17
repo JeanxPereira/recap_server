@@ -87,6 +87,11 @@ namespace Game {
 		mLua = std::make_unique<Lua>(*this);
 		mServer = std::make_unique<RakNet::Server>(*this);
 
+		std::cout << "[RakNet] starting on IP "
+							<< std::hex << mData.hostNetwork.exip.address
+							<< " port " << std::dec << mData.hostNetwork.exip.port
+							<< std::endl;
+							
 		mServer->start(mData.hostNetwork.exip.port);
 		mGameStartTime = utils::get_milliseconds();
 
@@ -1108,5 +1113,25 @@ namespace Game {
 				mServer->SendServerEvent(client, catalystEvent);
 			}
 		}
+	}
+	
+	void Instance::SendAbilityAnimationSequence(const AbilityAnimationSequenceMsg &msg)
+	{
+		// TODO: implementar de verdade.
+		// Aqui dá pra seguir o mesmo padrão que você usa em:
+		//   - SendCombatEvent(...)
+		//   - SendServerEvent(...)
+		//
+		// Exemplo pseudo-código:
+		//
+		// Network::AbilityAnimationSequencePacket packet{};
+		// packet.objectId      = msg.objectId;
+		// packet.abilityId     = msg.abilityId;
+		// packet.warmupData    = msg.warmupData;
+		// packet.timestamp     = msg.timestamp;
+		// packet.animSpeed     = msg.animSpeedScale;
+		// packet.sequenceIndex = msg.sequenceIndex;
+		//
+		// mServer->Broadcast(packet);
 	}
 }

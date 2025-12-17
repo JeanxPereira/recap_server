@@ -11,6 +11,8 @@
 #include "game/config.h"
 #include "game/noun.h"
 #include "game/lua.h"
+#include "game/dbpfmanager.h"
+#include "game/assetdata.h"
 
 #include "utils/net.h"
 
@@ -149,10 +151,41 @@ bool Application::OnInit() {
 
 	// Preparing the data folder
 	std::thread t([this]() {
-		if (!darksporeInstallPath.empty())
-		{
+
+		if (!darksporeInstallPath.empty()) {
 			Installer::LoadDarksporeData(darksporeInstallPath, darksporeInstallVersion);
 		}
+
+		auto guessAssetPackagePath = []() -> std::filesystem::path {
+			if (!darksporeInstallPath.empty()) {
+				auto p = std::filesystem::path(darksporeInstallPath)
+					/ "Data"
+					/ "AssetData_Binary.package";
+				if (std::filesystem::exists(p)) return p;
+			}
+			auto cwd = std::filesystem::current_path();
+			return cwd.parent_path() / "Data" / "AssetData_Binary.package";
+		};
+
+		const auto pkg = guessAssetPackagePath();
+
+		DBPFManager::InitConfig cfg;
+		cfg.mode = DBPFManager::SourceMode::PackageBridge;
+		cfg.asset_package = pkg;
+		cfg.xml_root = "data/serverdata";
+		cfg.registry_dir = std::filesystem::current_path(); // needs reg_file.txt, reg_type.txt etc
+		cfg.dom_cache_capacity = 256;
+
+		std::cout << "[DBPFManager] opening: " << cfg.asset_package << std::endl;
+		if (DBPFManager::init(cfg)) {
+			std::cout << "[DBPFManager] initialized" << std::endl;
+		} else {
+			std::cout << "[DBPFManager] init failed; using disk/XML only" << std::endl;
+		}
+
+		Game::AssetData::Instance().Initialize();
+		Game::AssetData::Instance().DebugTestNounParsing();
+
 
 		// Load noun files
 		(void)Game::NounDatabase::Instance();
@@ -175,6 +208,9 @@ int Application::OnExit() {
 
 	mScheduler->Shutdown();
 	mScheduler.reset();
+
+	DBPFManager::shutdown();
+	
 	return 0;
 }
 

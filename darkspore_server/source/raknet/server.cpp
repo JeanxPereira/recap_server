@@ -28,6 +28,9 @@
 #include <algorithm>
 #include <tuple>
 #include <array>
+#include <vector>
+#include <random>
+
 
 // TODO: Use broadcast to send packets instead of loops
 
@@ -70,7 +73,13 @@
 */
 
 // TEMPORARY VARIABLES, TESTING ONLY!
-static bool teleportMovement = false;
+static bool teleportMovement = true;
+
+static bool DBG_SEND_SERVER_EVENT       = false;
+static bool DBG_SEND_OBJECT_SPAWNS      = true;
+static bool DBG_SEND_TELEPORTS          = true;
+static bool DBG_SEND_LOOT_UPDATE        = false;
+static bool DBG_SEND_INTERACTABLE_UPDATE= true;
 
 // RakNet
 namespace RakNet {
@@ -81,6 +90,12 @@ namespace RakNet {
 		for (size_t i = 0; i < length; ++i) {
 			Write<uint8_t>(stream, bytes[i & bytesMask]);
 		}
+	}
+
+	static void LogPacketSize(const char* tag, const RakNet::BitStream& bs) {
+			auto bits  = bs.GetNumberOfBitsUsed();
+			auto bytes = (bits + 7) / 8;
+			std::cout << std::format("[{}] size={} bytes ({} bits)", tag, bytes, bits) << std::endl;
 	}
 
 	void PrintDebugStream(RakNet::BitStream& stream) {
@@ -753,9 +768,111 @@ namespace RakNet {
 					combatData.cursorPosition = command.ability.cursorPosition;
 					combatData.targetPosition = command.ability.targetPosition;
 					// TODO: find creature index, can be in range of [0..2] i.e. one of three characters in squad
-					const uint32_t creatureIndex = 0;
-					combatData.abilityId = player->GetAbilityId(creatureIndex, command.ability.index);
+
+					// const uint32_t creatureIndex = 0;
+					// combatData.abilityId = player->GetAbilityId(creatureIndex, command.ability.index);
+					// combatData.abilityRank = command.ability.rank;
+
+					const uint32_t creatureIndex = player->GetCurrentDeckIndex();
+
+					uint32_t abilityId = player->GetAbilityId(creatureIndex, command.ability.index);
+
+					std::cout << "[DBG] pre-fallback: deck=" << creatureIndex
+										<< " idx=" << int(command.ability.index)
+										<< " abilityId=" << abilityId << "\n";
+
+					if (abilityId == 0)
+					{
+						const auto squad = player->GetSquad();
+						if (!squad) {
+							std::cout << "[ERR] squad null\n";
+						}
+						else
+						{
+							const auto &ids = squad->GetCreatureIds();
+							if (creatureIndex >= ids.size()) {
+								std::cout << "[ERR] creatureIndex out-of-range\n";
+							}
+							else if (auto user = player->GetUser())
+							{
+								auto cr = user->GetCreatureById(ids[creatureIndex]);
+								if (!cr) {
+									std::cout << "[ERR] user->GetCreatureById returned null (id=" << ids[creatureIndex] << ")\n";
+								}
+								else {
+									const auto noun = cr->GetNoun();
+									std::cout << "[DBG] noun=" << noun << " a0=" << cr->GetAbility(0)
+														<< " a1=" << cr->GetAbility(1)
+														<< " a2=" << cr->GetAbility(2)
+														<< " a3=" << cr->GetAbility(3) << "\n";
+
+									auto &db = SporeNet::Get().GetTemplateDatabase();
+									if (auto templ = db.Get(noun)) {
+										std::cout << "[DBG] templ(by noun) OK\n";
+
+										abilityId = templ->GetAbility(command.ability.index);
+
+										if (abilityId == 0 && command.ability.index == 3) {
+											std::vector<uint32_t> candidates;
+											for (uint8_t i = 0; i < 3; ++i) {
+												uint32_t id = templ->GetAbility(i);
+												if (id != 0) {
+													candidates.push_back(id);
+												}
+											}
+
+											if (!candidates.empty()) {
+												static std::mt19937 rng{std::random_device{}()};
+												std::uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+
+												abilityId = candidates[dist(rng)];
+												std::cout << "[DBG] fallback rand-slot -> picked abilityId="
+														      << abilityId << " from other slots\n";
+											}
+										}
+									}
+									else
+									{
+										std::cout << "[WARN] templ(by noun) NOT FOUND;\n";
+										// if (auto templByName = db.Get(cr->GetName())) {
+										//     abilityId = templByName->GetAbility(command.ability.index);
+										// }
+									}
+									std::cout << "[DBG] post-template abilityId=" << abilityId << "\n";
+								}
+							}
+						}
+					}
+
+					combatData.abilityId = abilityId;
 					combatData.abilityRank = command.ability.rank;
+
+					do {
+							auto squad = player->GetSquad();
+							uint32_t noun = 0;
+							if (squad) {
+									const auto& ids = squad->GetCreatureIds();
+									uint8_t deckIdxDbg = player->GetCurrentDeckIndex();
+									if (deckIdxDbg < ids.size()) {
+											if (auto userDbg = player->GetUser()) {
+													if (auto crDbg = userDbg->GetCreatureById(ids[deckIdxDbg])) {
+															noun = crDbg->GetNoun();
+													}
+											}
+									}
+							}
+							std::cout << "[RESOLVE] deck=" << (int)player->GetCurrentDeckIndex()
+												<< " idx=" << (int)command.ability.index
+												<< " abilityId=" << combatData.abilityId
+												<< " noun=" << noun << std::endl;
+					} while(0);
+
+					if (combatData.abilityId == 0)
+					{
+						std::cout << "[ERR] abilityId=0 (deck=" << creatureIndex
+											<< " idx=" << int(command.ability.index) << ")\n";
+					}
+
 					combatData.unk[0] = command.ability.rank;
 					combatData.unk[1] = command.ability.unk;
 					combatData.valueFromActionResponse = command.ability.userData;
@@ -764,12 +881,12 @@ namespace RakNet {
 
 					auto targetObject = mGame.GetObjectManager().Get(command.ability.targetId);
 					if (targetObject) {
-						//AbilityCommandResponse actionResponse;
-						//actionResponse.abilityId = combatData.abilityId;
-						//actionResponse.cooldown = 0;
-						//actionResponse.timeImmobilized = 0;
-						//actionResponse.userData = command.ability.userData;
-						//SendActionCommandResponse(client, actionResponse);
+						AbilityCommandResponse actionResponse;
+						actionResponse.abilityId = combatData.abilityId;
+						actionResponse.cooldown = 0;
+						actionResponse.timeImmobilized = 0;
+						actionResponse.userData = command.ability.userData;
+						SendActionCommandResponse(client, actionResponse);
 					}
 					
 					std::cout << "=== End UseCharacterAbility ===" << std::endl;
@@ -797,7 +914,7 @@ namespace RakNet {
 				combatData.unk[1] = command.ability.unk;
 				combatData.valueFromActionResponse = command.ability.userData;
 
-				std::cout << "🔄 Criando ActionResponse..." << std::endl;
+				std::cout << "Creating ActionResponse..." << std::endl;
 				std::cout << "Combat Data - Ability ID: " << combatData.abilityId << std::endl;
 				std::cout << "Combat Data - Target ID: " << combatData.targetId << std::endl;
 
@@ -807,11 +924,11 @@ namespace RakNet {
 				actionResponse.cooldown = 2000;
 				actionResponse.userData = 0x4321;
 
-				std::cout << "✅ ActionResponse criado - Ability ID: " << actionResponse.abilityId << std::endl;
+				std::cout << "ActionResponse created - Ability ID: " << actionResponse.abilityId << std::endl;
 
-				std::cout << "🔄 Enviando ActionCommandResponse..." << std::endl;
+				std::cout << "Sending ActionCommandResponse..." << std::endl;
 				SendActionCommandResponse(client, actionResponse);
-				std::cout << "✅ ActionCommandResponse enviado!" << std::endl;
+				std::cout << "ActionCommandResponse sent!" << std::endl;
 
 				/*
 				mGame.UseAbility(object, combatData);
@@ -819,18 +936,6 @@ namespace RakNet {
 				*/
 
 				// SendModifierCreated(client, object);
-
-				std::cout << "🔄 Criando Director..." << std::endl;
-				cAIDirector director;
-				director.mbBossComplete = true;
-				std::cout << "✅ Director criado!" << std::endl;
-
-				std::cout << "🔄 Enviando DirectorState..." << std::endl;
-				SendDirectorState(client, director);
-				std::cout << "✅ DirectorState enviado!" << std::endl;
-
-				std::cout << "=== UseCharacterAbility COMPLETO ===" << std::endl;
-				break;
 			}
 
 			// Catalyst pickup
@@ -1309,7 +1414,8 @@ namespace RakNet {
 		BitStream outStream(8);
 		outStream.Write(PacketID::DirectorState);
 
-		director.WriteReflection(outStream);
+		// director.WriteReflection(outStream);
+		director.WriteTo(outStream);
 
 		Send(outStream, client);
 	}
@@ -1334,8 +1440,9 @@ namespace RakNet {
 
 		Send(outStream, client);
 	}
-
+	
 	void Server::SendObjectCreate(const ClientPtr& client, const Game::ObjectPtr& object) {
+		if (!DBG_SEND_OBJECT_SPAWNS) return;
 		if (!object) {
 			return;
 		}
@@ -1390,6 +1497,7 @@ namespace RakNet {
 		}
 #endif
 		Send(outStream, client);
+		LogPacketSize("ObjectCreate", outStream);
 	}
 
 	void Server::SendObjectUpdate(const ClientPtr& client, const Game::ObjectPtr& object) {
@@ -1576,6 +1684,8 @@ namespace RakNet {
 	}
 
 	void Server::SendObjectTeleport(const ClientPtr& client, const Game::ObjectPtr& object, const glm::vec3& position, const glm::quat& orientation) {
+		if (!DBG_SEND_TELEPORTS) return;
+
 		BitStream outStream(33);
 		outStream.Write(PacketID::ObjectTeleport);
 
@@ -1584,6 +1694,7 @@ namespace RakNet {
 		Write(outStream, orientation);
 
 		Send(outStream, client);
+		LogPacketSize("ObjectTeleport", outStream);
 	}
 
 	void Server::SendObjectPlayerMove(const ClientPtr& client, const Game::ObjectPtr& object, const Game::Locomotion& locomotionData) {
@@ -1647,9 +1758,10 @@ namespace RakNet {
 		outStream.Write(PacketID::LocomotionDataUpdate);
 
 		Write<uint32_t>(outStream, object->GetId());
-		locomotionData.WriteReflection(outStream);
-
+		// locomotionData.WriteReflection(outStream);
+		locomotionData.WriteTo(outStream);
 		Send(outStream, client);
+		LogPacketSize("LocomotionDataUpdate", outStream);
 	}
 
 	void Server::SendLocomotionDataUnreliableUpdate(const ClientPtr& client, const Game::ObjectPtr& object, const glm::vec3& position) {
@@ -1699,6 +1811,8 @@ namespace RakNet {
 
 	void Server::SendInteractableDataUpdate(const ClientPtr& client, const Game::ObjectPtr& object, const Game::InteractableData& interactableData) {
 		// 100%
+		if (!DBG_SEND_INTERACTABLE_UPDATE) return;
+
 		if (!object) {
 			return;
 		}
@@ -1707,9 +1821,11 @@ namespace RakNet {
 		outStream.Write(PacketID::InteractableDataUpdate);
 
 		Write<uint32_t>(outStream, object->GetId());
-		interactableData.WriteReflection(outStream);
+		// interactableData.WriteReflection(outStream);
+		interactableData.WriteTo(outStream);
 
 		Send(outStream, client);
+		LogPacketSize("InteractableDataUpdate", outStream);
 	}
 
 	void Server::SendAgentBlackboardUpdate(const ClientPtr& client, const Game::ObjectPtr& object, const Game::AgentBlackboard& agentBlackboard) {
@@ -1729,6 +1845,8 @@ namespace RakNet {
 
 	void Server::SendLootDataUpdate(const ClientPtr& client, const Game::ObjectPtr& object, const Game::LootData& lootData) {
 		// 100%
+		if (!DBG_SEND_LOOT_UPDATE) return;
+
 		if (!object) {
 			return;
 		}
@@ -1740,6 +1858,7 @@ namespace RakNet {
 		lootData.WriteReflection(outStream);
 
 		Send(outStream, client);
+		LogPacketSize("LootDataUpdate", outStream);
 	}
 
 	void Server::SendCooldownUpdate(const ClientPtr& client, const Game::ObjectPtr& object, uint32_t id, uint64_t start, uint32_t duration) {
@@ -1763,12 +1882,15 @@ namespace RakNet {
 
 	void Server::SendServerEvent(const ClientPtr& client, const Game::ServerEventBase& serverEvent) {
 		// 100%
+		if (!DBG_SEND_SERVER_EVENT) return;
+
 		BitStream outStream(8);
 		outStream.Write(PacketID::ServerEvent);
 
 		serverEvent.WriteReflection(outStream);
 
 		Send(outStream, client);
+		LogPacketSize("ServerEvent", outStream);
 	}
 
 	void Server::SendActionCommandMessages(const ClientPtr& client, const Game::PlayerPtr& player) {

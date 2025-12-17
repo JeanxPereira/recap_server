@@ -31,7 +31,7 @@ set_target_properties(recap_server PROPERTIES
     VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 
 if(MSVC)
-    target_compile_options(recap_server PRIVATE $<$<CONFIG:Debug>:/bigobj>)
+    target_compile_options(recap_server PRIVATE /utf-8 /bigobj)
     set_target_properties(recap_server PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE /INCREMENTAL:NO /Brepro")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
@@ -103,8 +103,8 @@ if(luajit_ADDED)
     file(GLOB_RECURSE LUAJIT_SOURCES "${luajit_SOURCE_DIR}/src/*.h" "${luajit_SOURCE_DIR}/src/*.c")
 
     if(MSVC)
-        include(cmake/get_findvcvars.cmake)
-        find_package(Vcvars REQUIRED)
+        # include(cmake/get_findvcvars.cmake)
+        # find_package(Vcvars REQUIRED)
         set(LUAJIT_BUILD_COMMAND ${Vcvars_LAUNCHER} ${luajit_SOURCE_DIR}/src/msvcbuild.bat static)
         set(LUAJIT_BUILD_OUTPUT ${luajit_SOURCE_DIR}/src/lua51.lib)
     else()
@@ -207,4 +207,8 @@ elseif(APPLE)
     install(TARGETS recap_server
         BUNDLE DESTINATION "Applications"
         COMPONENT recap_server)
+endif()
+
+if(MSVC)
+    target_compile_options(recap_server PRIVATE /utf-8 /bigobj>)
 endif()

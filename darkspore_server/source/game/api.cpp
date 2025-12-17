@@ -512,16 +512,25 @@ namespace Game {
 
 		// Png
 		router->add("/template_png/([a-zA-Z0-9_.]+)", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
+			const auto& request = session.get_request();
+			std::cout << "[PNG] template_png request: " << request.uri.resource() << std::endl;
 			responseWithFileInStorage(session, response, Config::Get(CONFIG_WWW_STATIC_PATH));
 		});
 
 		router->add("/creature_png/([a-zA-Z0-9_.]+)", { boost::beast::http::verb::get, boost::beast::http::verb::post }, [this](HTTP::Session& session, HTTP::Response& response) {
 			const auto& request = session.get_request();
+			auto res = request.uri.resource();
+			std::cout << "[PNG] creature_png request: " << res << std::endl;
 
 			std::string storagePath = Config::Get(CONFIG_STORAGE_PATH);
-			std::string path = storagePath + request.uri.resource();
+			std::string path = storagePath + res;
+			std::cout << "[PNG] full path: " << path << std::endl;
+
 			if (!std::filesystem::exists(path)) {
-				path = storagePath + "default.png";
+					std::cout << "[PNG] NOT FOUND, using default.png" << std::endl;
+					path = storagePath + "default.png";
+			} else {
+					std::cout << "[PNG] FOUND" << std::endl;
 			}
 
 			response.version() |= 0x1000'0000;
@@ -768,6 +777,7 @@ namespace Game {
 
 			// TODO: Unlocking everything from start to test; remove that in the future
 			SporeNet::Account& account = user->get_account();
+			account.avatarId = stoi(avatar);
 			account.tutorialCompleted = false;
 			account.chainProgression = 24;
 			account.creatureRewards = 100;
@@ -776,7 +786,6 @@ namespace Game {
 			account.defaultDeckPveId = 1;
 			account.defaultDeckPvpId = 1;
 			account.level = 100;
-			account.avatarId = stoi(avatar);
 			account.dna = 10000000;
 			account.newPlayerInventory = 1;
 			account.newPlayerProgress = 9500;

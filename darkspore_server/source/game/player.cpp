@@ -86,39 +86,71 @@ namespace Game {
 	}
 
 	uint32_t Player::GetAbilityId(uint8_t creatureIndex, uint8_t abilityIndex) const {
-		// TODO: rewrite creature stuff
-		switch (abilityIndex) {
-			case 0: case 2: case 3: {
-				if (creatureIndex >= 3) {
-					creatureIndex = 0;
-				}
+			// TODO: rewrite creature stuff
+			switch (abilityIndex) {
+					case 0:
+					case 2:
+					case 3: {
+							if (creatureIndex >= 3) {
+									creatureIndex = 0;
+							}
 
-				const auto& creatureIds = mSquad->GetCreatureIds();
-				const auto& creature = mUser->GetCreatureById(creatureIds[creatureIndex]);
-				if (!creature) {
-					return 0;
-				}
+							const auto& creatureIds = mSquad->GetCreatureIds();
+							const auto& creature = mUser->GetCreatureById(creatureIds[creatureIndex]);
+							if (!creature) {
+									return 0;
+							}
 
-				switch (abilityIndex) {
-					case 0: return creature->GetAbility(0);
-					case 2: return creature->GetAbility(1);
-					case 3: return creature->GetAbility(3);
-				}
+							switch (abilityIndex) {
+									case 0: return creature->GetAbility(0);
+									case 2: return creature->GetAbility(1);
+									case 3: return creature->GetAbility(3);
+							}
 
-				break;
+							break;
+					}
+
+					case 6:
+					case 7:
+					case 8:
+					{
+						const auto &creatureIds = mSquad->GetCreatureIds();
+						auto slot = abilityIndex - 6;
+
+						std::cout << "[SQUAD] abilityIndex=" << int(abilityIndex)
+											<< " creatureSlot=" << int(slot) << std::endl;
+
+						if (slot >= creatureIds.size())
+						{
+							std::cout << "[SQUAD] creatureIds too small" << std::endl;
+							return 0;
+						}
+
+						auto creatureIdFromSquad = creatureIds[slot];
+						const auto &creature = mUser->GetCreatureById(creatureIdFromSquad);
+						if (!creature)
+						{
+							std::cout << "[SQUAD] creature is null for id=" << creatureIdFromSquad << std::endl;
+							return 0;
+						}
+
+						std::cout << "[SQUAD] creatureId=" << creatureIdFromSquad
+											<< " internalId=" << creature->GetId()
+											<< " noun=" << creature->GetNoun()
+											<< " name='" << creature->GetName() << "'"
+											<< std::endl;
+
+						auto abilityId = creature->GetAbility(2);
+						std::cout << "[SQUAD] ability(slot2)=" << abilityId << std::endl;
+
+						return abilityId;
+					}
+
+					default:
+							break;
 			}
 
-			case 6: case 7: case 8: {
-				const auto& creatureIds = mSquad->GetCreatureIds();
-				const auto& creature = mUser->GetCreatureById(creatureIds[abilityIndex - 6]);
-				if (creature) {
-					return creature->GetAbility(2);
-				}
-				break;
-			}
-		}
-
-		return 0;
+			return 0;
 	}
 
 	uint32_t Player::GetAbilityRank(uint8_t creatureIndex, uint8_t abilityIndex) const {

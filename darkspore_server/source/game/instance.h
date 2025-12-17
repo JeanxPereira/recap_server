@@ -23,6 +23,9 @@
 
 // Game
 namespace Game {
+	
+	struct AbilityAnimationSequenceMsg;
+
 	// GameInfo
 	struct GameInfo {
 		std::map<std::string, std::string> attributes;
@@ -176,6 +179,7 @@ namespace Game {
 			void SwapCharacter(const PlayerPtr& player, uint32_t creatureIndex);
 			void InteractWithObject(const PlayerPtr& player, uint32_t objectId);
 			void CancelAction(const PlayerPtr& player, const ObjectPtr& object);
+			void SendAbilityAnimationSequence(const AbilityAnimationSequenceMsg& msg);
 
 			// Loot
 			void DropLoot(const PlayerPtr& player, uint64_t lootInstanceId);

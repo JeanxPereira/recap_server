@@ -177,6 +177,15 @@ namespace Game {
 			float mAbsorbedAmount = 0;
 	};
 
+	struct AbilityAnimationSequenceMsg {
+			std::uint32_t objectId{0};
+			std::uint32_t abilityId{0};
+			std::uint32_t warmupData{0};
+			std::uint64_t timestamp{0};     // ms
+			float         animSpeedScale{1.0f};
+			std::uint8_t  sequenceIndex{0};
+	};
+
 	/*
 	struct ServerEvent {
 		uint32_t simpleSwarmEffectID = 0;
