@@ -8,7 +8,7 @@
 
 #include "Core/Utils/Functions.h"
 
-#include "Game/instance.h"
+#include "Game/Instance.h"
 #include "Game/ObjectManager.h"
 #include "Game/Serverevent.h"
 #include "Game/Catalyst.h"

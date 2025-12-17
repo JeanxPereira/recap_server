@@ -26,13 +26,13 @@
 
 #elif defined(__OpenBSD__)
 
-#include <sys/types.h>
+#include <sys/Types.h>
 #define bswap32(x) swap32(x)
 #define bswap64(x) swap64(x)
 
 #elif defined(__NetBSD__)
 
-#include <sys/types.h>
+#include <sys/Types.h>
 #include <machine/bswap.h>
 
 #else

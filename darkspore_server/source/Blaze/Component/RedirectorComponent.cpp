@@ -4,7 +4,7 @@
 
 #include "Main.h"
 #include "Blaze/Client.h"
-#include "Game/config.h"
+#include "Game/Config.h"
 
 #include <iostream>
 

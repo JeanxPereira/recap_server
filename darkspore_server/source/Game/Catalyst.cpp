@@ -5,7 +5,7 @@
 
 #include "Core/Utils/Functions.h"
 
-#include "RakNet/types.h"
+#include "RakNet/Types.h"
 
 // Game
 namespace Game {

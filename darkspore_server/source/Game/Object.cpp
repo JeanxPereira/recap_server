@@ -5,7 +5,7 @@
 #include "Instance.h"
 #include "Catalyst.h"
 
-#include "SporeNet/part.h"
+#include "SporeNet/Part.h"
 
 #include "Core/Utils/Functions.h"
 #include "Core/Utils/Log.h"

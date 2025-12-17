@@ -4,11 +4,11 @@
 #include "Core/Async/Scheduler.h"
 #include "Core/Base/Version.h"
 
-#include "SporeNet/instance.h"
+#include "SporeNet/Instance.h"
 
 #include "HTTP/uri.h"
 
-#include "Game/config.h"
+#include "Game/Config.h"
 #include "Game/noun.h"
 #include "Game/lua.h"
 

@@ -2,7 +2,7 @@
 // Include
 #include "RoomsComponent.h"
 
-#include "SporeNet/instance.h"
+#include "SporeNet/Instance.h"
 #include "SporeNet/room.h"
 
 #include "Blaze/Client.h"

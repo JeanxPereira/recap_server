@@ -7,7 +7,7 @@
 #include "Blaze/Client.h"
 #include "Blaze/Functions.h"
 #include "Game/gamemanager.h"
-#include "SporeNet/instance.h"
+#include "SporeNet/Instance.h"
 #include "SporeNet/user.h"
 #include "Core/Utils/Functions.h"
 
