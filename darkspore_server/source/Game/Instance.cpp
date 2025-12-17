@@ -10,7 +10,7 @@
 
 #include "RakNet/Server.h"
 #include "SporeNet/Instance.h"
-#include "SporeNet/user.h"
+#include "SporeNet/User.h"
 #include "Core/Utils/Functions.h"
 
 #include <iostream>

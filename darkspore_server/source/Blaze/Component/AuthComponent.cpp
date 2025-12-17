@@ -4,7 +4,7 @@
 #include "UserSessionComponent.h"
 
 #include "SporeNet/Instance.h"
-#include "SporeNet/user.h"
+#include "SporeNet/User.h"
 
 #include "Blaze/Client.h"
 #include "Blaze/Functions.h"

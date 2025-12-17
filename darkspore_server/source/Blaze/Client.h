@@ -8,7 +8,7 @@
 
 #include "Network/Client.h"
 
-#include "SporeNet/user.h"
+#include "SporeNet/User.h"
 
 #include <boost/asio/ssl.hpp>
 

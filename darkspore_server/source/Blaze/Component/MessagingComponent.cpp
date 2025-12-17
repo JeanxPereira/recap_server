@@ -5,7 +5,7 @@
 #include "UserSessionComponent.h"
 
 #include "SporeNet/Instance.h"
-#include "SporeNet/user.h"
+#include "SporeNet/User.h"
 
 #include "Game/gamemanager.h"
 #include "Game/lua.h"

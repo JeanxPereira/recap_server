@@ -8,7 +8,7 @@
 #include "Blaze/Functions.h"
 #include "Game/gamemanager.h"
 #include "SporeNet/Instance.h"
-#include "SporeNet/user.h"
+#include "SporeNet/User.h"
 #include "Core/Utils/Functions.h"
 
 #include <iostream>
