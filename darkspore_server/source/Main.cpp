@@ -6,7 +6,7 @@
 
 #include "SporeNet/Instance.h"
 
-#include "HTTP/uri.h"
+#include "HTTP/URI.h"
 
 #include "Game/Config.h"
 #include "Game/noun.h"

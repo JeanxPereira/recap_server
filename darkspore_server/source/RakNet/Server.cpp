@@ -10,7 +10,7 @@
 
 #include "Game/Instance.h"
 #include "Game/ObjectManager.h"
-#include "Game/Serverevent.h"
+#include "Game/ServerEvent.h"
 #include "Game/Catalyst.h"
 
 #include <glm/gtx/euler_angles.hpp>

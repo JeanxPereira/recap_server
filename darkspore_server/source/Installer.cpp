@@ -2,7 +2,7 @@
 // Created by vitor on 8/4/25.
 //
 
-#include "installer.h"
+#include "Installer.h"
 
 #include <iostream>
 #include <fstream>

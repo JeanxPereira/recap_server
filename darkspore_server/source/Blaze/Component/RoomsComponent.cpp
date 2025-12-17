@@ -3,7 +3,7 @@
 #include "RoomsComponent.h"
 
 #include "SporeNet/Instance.h"
-#include "SporeNet/room.h"
+#include "SporeNet/Room.h"
 
 #include "Blaze/Client.h"
 #include "Core/Utils/Functions.h"

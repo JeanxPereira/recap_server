@@ -7,7 +7,7 @@
 #include "SporeNet/Instance.h"
 #include "SporeNet/User.h"
 
-#include "Game/gamemanager.h"
+#include "Game/GameManager.h"
 #include "Game/lua.h"
 
 #include "RakNet/Server.h"
